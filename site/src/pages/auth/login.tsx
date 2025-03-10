@@ -1,9 +1,22 @@
+import MRButton from "@/components/ui/MRButton";
+import MRCard from "@/components/ui/MRCard";
+import MRInput from "@/components/ui/MRInput";
 import Link from "next/link";
+import { useState } from "react";
+
+interface Error {
+	message: string;
+	type: "Geral" | string;
+}
 
 export default function LoginPage() {
+	const [error, setError] = useState<Error | null>(null);
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
 	return (
 		<div className="flex items-center justify-center h-screen bg-indigo-700 text-white">
-			<div className="w-full max-w-md bg-indigo-900 p-8 rounded-lg shadow-lg">
+			<MRCard>
 				<h1 className="text-3xl font-bold text-center mb-6">
 					Entrar no iPet
 				</h1>
@@ -11,40 +24,25 @@ export default function LoginPage() {
 					className="space-y-4"
 					onSubmit={(e) => e.preventDefault()}
 				>
-					<div>
-						<label
-							htmlFor="email"
-							className="block text-lg font-medium"
-						>
-							Email:
-						</label>
-						<input
-							type="email"
-							id="email"
-							className="w-full p-3 mt-1 rounded-lg bg-indigo-800 border border-indigo-600 focus:ring-2 focus:ring-pink-500 focus:outline-none text-white"
-							placeholder="Digite seu email"
-						/>
-					</div>
-					<div>
-						<label
-							htmlFor="password"
-							className="block text-lg font-medium"
-						>
-							Senha:
-						</label>
-						<input
-							type="password"
-							id="password"
-							className="w-full p-3 mt-1 rounded-lg bg-indigo-800 border border-indigo-600 focus:ring-2 focus:ring-pink-500 focus:outline-none text-white"
-							placeholder="Digite sua senha"
-						/>
-					</div>
-					<button
-						type="submit"
-						className="w-full bg-pink-600 hover:bg-pink-700 transition-all py-3 rounded-lg text-lg font-semibold"
-					>
-						Entrar
-					</button>
+					<MRInput
+						label="Email"
+						setValue={setEmail}
+						value={email}
+						type="email"
+						id="email"
+						placeholder="Digite seu email"
+						error={error?.type === "email" ? error?.message : undefined}
+					/>
+					<MRInput
+						label="Senha"
+						setValue={setPassword}
+						value={password}
+						type="password"
+						id="password"
+						placeholder="Digite sua senha"
+						error={error?.type === "password" ? error?.message : undefined}
+					/>
+					<MRButton type="submit">Entrar</MRButton>
 				</form>
 				<div className="text-center mt-4 text-sm">
 					<Link
@@ -56,14 +54,14 @@ export default function LoginPage() {
 				</div>
 				<div className="text-center mt-2 text-sm">
 					Não tem uma conta?{" "}
-					<a
+					<Link
 						href="/auth/register"
 						className="text-pink-400 font-semibold hover:underline"
 					>
 						Crie uma agora
-					</a>
+					</Link>
 				</div>
-			</div>
+			</MRCard>
 		</div>
 	);
 }

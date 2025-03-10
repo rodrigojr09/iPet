@@ -5,6 +5,17 @@ interface MRInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	setValue: (e: string) => void;
 }
 
+/**
+ * A input component with a label and error handling.
+ *
+ * @param {string} [label] - The label of the input.
+ * @param {string} [error] - The error message of the input.
+ * @param {string} value - The value of the input.
+ * @param {(e: string) => void} setValue - The function to set the value of the input.
+ * @param {React.InputHTMLAttributes<HTMLInputElement>} [props] - Other props to pass to the input element.
+ *
+ * @returns {React.ReactElement} - The input component.
+ */
 export default function MRInput({
 	label,
 	error,
@@ -15,7 +26,10 @@ export default function MRInput({
 	return (
 		<div className="w-full">
 			{label && (
-				<label className="block text-lg font-medium text-white">
+				<label
+					id={props.id}
+					className="block text-lg font-medium text-white"
+				>
 					{label}
 				</label>
 			)}

@@ -1,3 +1,5 @@
+import MRButton from "@/components/ui/MRButton";
+import MRCard from "@/components/ui/MRCard";
 import MRInput from "@/components/ui/MRInput";
 import axios from "axios";
 import Link from "next/link";
@@ -46,7 +48,7 @@ export default function RegisterPage() {
 
 	return (
 		<div className="flex items-center justify-center h-screen bg-indigo-700 text-white">
-			<div className="w-full max-w-md bg-indigo-900 p-8 rounded-lg shadow-lg">
+			<MRCard>
 				<h1 className="text-3xl font-bold text-center mb-6">
 					Criar Conta no iPet
 				</h1>
@@ -98,12 +100,7 @@ export default function RegisterPage() {
 						}
 					/>
 
-					<button
-						type="submit"
-						className="w-full bg-pink-600 hover:bg-pink-700 transition-all py-3 rounded-lg text-lg font-semibold"
-					>
-						Criar Conta
-					</button>
+					<MRButton type="submit">Criar Conta</MRButton>
 				</form>
 
 				{/* Exibição de erro geral */}
@@ -122,7 +119,7 @@ export default function RegisterPage() {
 						Entre aqui
 					</Link>
 				</div>
-			</div>
+			</MRCard>
 		</div>
 	);
 }
