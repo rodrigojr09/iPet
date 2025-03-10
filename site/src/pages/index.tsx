@@ -11,7 +11,7 @@ export default function Home() {
 			{/* Main content */}
 			<main className="flex flex-col md:flex-row items-center justify-center min-h-[60vh] flex-grow p-8 md:px-16">
 				{/* Pet image */}
-				<div className="w-full md:w-1/2 h-auto">
+				<div className="w-full md:w-1/2">
 					<PetImage />
 				</div>
 

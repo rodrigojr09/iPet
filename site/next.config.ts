@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
 				hostname: "cdn2.thecatapi.com",
 			},
 		],
-	},
+	}
 };
 
 export default nextConfig;

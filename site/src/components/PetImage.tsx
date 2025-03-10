@@ -35,7 +35,7 @@ const PetImage = () => {
 			height={1000}
 			src={image}
 			alt="Pet"
-			className="rounded-lg shadow-lg h-1/2 w-1/2 m-auto hover:scale-125 duration-500"
+			className="rounded-lg shadow-lg h-1/2 w-1/2 m-auto hover:scale-x-125 hover:scale-y-110 duration-500"
 		/>
 	) : (
 		<p>Imagem não disponível</p>

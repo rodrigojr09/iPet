@@ -20,14 +20,7 @@
 ## 📂 Estrutura do Projeto
 
 ```plaintext
-/iPet
-├── src/                      # Código-fonte do aplicativo
-│   ├── components/           # Componentes reutilizáveis
-│   ├── screens/              # Telas do aplicativo
-│   ├── services/             # Integrações com APIs e banco de dados
-│   └── assets/               # Recursos estáticos (imagens, ícones, etc.)
-├── README.md                 # Documentação do Projeto iPet
-└── package.json              # Dependências do projeto
+/iPet Site
 ```
 
 ---
