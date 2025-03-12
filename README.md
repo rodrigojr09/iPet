@@ -8,25 +8,87 @@
 
 ---
 
+## Funcionalidades
+
+### Marketplace e Lojas
+
+-   Venda de mercadorias via plataforma
+-   Recomendações personalizadas de produtos para pets
+-   Assinatura de produtos recorrentes (ração, petiscos, brinquedos)
+-   Sistema de avaliações para produtos e lojas
+-   Mapa de estabelecimentos pet-friendly (restaurantes, hotéis, parques)
+-   Busca por profissionais (veterinários, adestradores, pet sitters, groomers)
+-   Clube de benefícios (cupons e descontos exclusivos em lojas parceiras)
+
+### Feed e Mídias Sociais
+
+-   Diario pet, o que o pet fez no dia a dia
+-   Auventuras, storys para pets
+-   Feed de mídias para pets (imagens, vídeos)
+-   Interação no feed (Like, Amei, Comentário)
+-   Stories para pets (publicações temporárias com filtros divertidos)
+-   Ranking de popularidade dos pets mais curtidos
+-   Desafios e tendências (ex: "Mostre o pet mais estiloso do dia!")
+-   Live Pets (opção para fazer transmissões ao vivo dos pets)
+
+### Interação Social e Comunidade
+
+-   DM (Direct Chat) para pais de pets interagirem entre si
+-   Comunidades para Pets (grupos organizados por raça, idade, interesses)
+-   Eventos para Pets (presenciais e virtuais)
+-   Parque Virtual (ambiente interativo para donos socializarem com avatares)
+
+### Bem-Estar e Cuidados Veterinários
+
+-   Web Veterinário (consultas online com veterinários)
+-   Agenda de vacinas e cuidados (lembretes personalizados)
+-   Reconhecimento de sintomas por IA (análise preliminar antes de buscar ajuda)
+-   FAQ Pet (artigos e dicas sobre cuidados com pets)
+
+### Perfil do Pet e Gamificação
+
+-   Perfil individual para cada pet
+-   Sistema de níveis para pets (interação gera progressão)
+-   Medalhas e conquistas (por desafios, engajamento e cuidados) e conquistas mensais por pódio, por hashtag
+-   Cuidados Virtuais (um "Tamagotchi" realista para ajudar nos cuidados com o pet)
+
+---
+
 ## 🔧 Tecnologias e Arquitetura
 
--   **Front-End**: React Native
--   **Back-End**: Expo
+-   **Front-End**: React.JS
+-   **Back-End**: NextJS Api
 -   **Banco de Dados**: MongoDB
--   **Plataforma**: Android
+-   **Plataforma**: Web
 
 ---
 
 ## 📂 Estrutura do Projeto
 
-```plaintext
 /iPet Site
-```
+
+-   Inicio
+    -   Mural Animal de mídias com Auventuras e PetMovs
+-   MiauChat
+    -   Conversa de Pais de Pets
+    -   ZooSocial
+    -   AuNegócios
+-   Marketplace
+    -   PetShop
+    -   Habitat's (Apartamento Pet)
+    -   Veterinarios
+    -   Avaliação de lojas e veterinarios por "estrela" (Icone: Pata de Coelho) e por comentario
+-   Perfil Pet
+    -   Ficha Animal
+    -   Muudalhas
+-   FAQ Pet
+    -   MiAujuda (Duvidas Frequentes)
+    -   Ajuda Pet Publica
 
 ---
 
 ## 📬 Contato
 
--   **Nome**: Rodrigo
--   **Email**: [rodrigo.macia019@gmail.com](mailto:rodrigo.macia019@gmail.com)
+-   **Nome**: Rodrigo, Murilo
+-   **Email**: [rodrigo.macia019@gmail.com](mailto:rodrigo.macia019@gmail.com), [murilof986@gmail.com](mailto:murilof986@gmail.com)
 -   **GitHub**: [iPet-BR](https://github.com/iPet-BR)
