@@ -7,6 +7,7 @@ import Link from "next/link";
  *
  * @returns The navbar component.
  */
+
 export default function Navbar() {
 	return (
 		<nav className="fixed top-0 left-0 w-full bg-indigo-900 shadow-lg py-4 px-8 flex justify-between items-center z-50">
