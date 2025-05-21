@@ -1,134 +1,105 @@
 import Navbar from "@/components/Navbar";
-import PetImage from "@/components/PetImage";
-import { FaPaw, FaStethoscope, FaUsers } from "react-icons/fa6";
+import { account } from "@/defaultData";
+import Image from "next/image";
 
 export default function Home() {
 	return (
-		<div className="flex flex-col h-screen bg-indigo-700 text-white pt-16">
-			{/* Header section */}
+		<div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white">
 			<Navbar />
-
-			{/* Main content */}
-			<main className="flex flex-col md:flex-row items-center justify-center min-h-[60vh] flex-grow p-8 md:px-16">
-				{/* Pet image */}
-				<div className="w-full md:w-1/2">
-					<PetImage />
-				</div>
-
-				{/* Description */}
-				<div className="w-full md:w-1/2 p-4 text-center md:text-left">
-					<h2 className="text-3xl font-semibold mb-4 text-white">
-						Bem-vindo ao iPet
-					</h2>
-					<p className="text-lg mb-6">
-						O iPet é uma plataforma que funciona como uma rede
-						social voltada para pets. Os usuários podem compartilhar
-						mídias dos seus pets e acessar páginas com informações e
-						recursos úteis para atender às necessidades dos animais
-						de estimação.
-					</p>
-					<a
-						href="#sobre"
-						className="inline-block bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-lg text-lg font-semibold transition-all"
-					>
-						Saiba mais
-					</a>
-				</div>
-			</main>
-
-			{/* About Section */}
-			<section
-				className="flex flex-col md:flex-row items-center justify-center flex-grow p-8 bg-gradient-to-r from-indigo-800 via-indigo-700 to-indigo-600 text-white"
-				id="sobre"
-			>
-				<div className="text-center md:text-left w-full md:w-3/4 px-4 py-8 rounded-lg bg-indigo-900 shadow-lg">
-					<h1 className="text-4xl font-extrabold mb-4">Sobre Nós</h1>
-					<p className="text-lg mb-6">
-						O iPet nasceu com o objetivo de criar uma comunidade
-						interativa e acolhedora para todos os amantes de pets.
-						Em um mundo onde os animais de estimação fazem parte
-						integral das nossas famílias, a plataforma visa fornecer
-						um espaço único onde donos de pets, profissionais da
-						área e apaixonados por animais possam se conectar,
-						compartilhar experiências e aprender juntos.
-					</p>
-					<p className="text-lg">
-						Nosso foco é proporcionar uma experiência social que vai
-						além da troca de fotos e vídeos dos animais. O iPet
-						permite que você descubra informações valiosas sobre
-						cuidados com seus pets, tenha acesso a recomendações de
-						clínicas veterinárias e mercados pet, além de participar
-						de discussões sobre os mais diversos assuntos
-						relacionados ao bem-estar animal.
-					</p>
-				</div>
-			</section>
-
-			{/* What We Do Section */}
-			<section
-				className="py-12 px-4 bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-500"
-				id="o-que-fazemos"
-			>
-				<div className="max-w-6xl mx-auto text-center md:text-left">
-					<h2 className="text-4xl font-extrabold text-white mb-6">
-						O que fazemos?
-					</h2>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-						<div className="bg-indigo-900 p-6 rounded-lg shadow-lg transform transition-all hover:scale-105 hover:bg-indigo-800">
-							<div className="text-3xl text-pink-500 mb-4">
-								<FaUsers />
-								{/* Icone de pessoas */}
-							</div>
-							<h3 className="text-2xl font-semibold text-white mb-4">
-								Conectamos donos de pets
-							</h3>
-							<p className="text-lg text-white">
-								Um lugar onde você pode compartilhar momentos
-								especiais com seus animais e encontrar outros
-								apaixonados por pets.
-							</p>
-						</div>
-						<div className="bg-indigo-900 p-6 rounded-lg shadow-lg transform transition-all hover:scale-105 hover:bg-indigo-800">
-							<div className="text-3xl text-pink-500 mb-4">
-								<FaStethoscope />
-								{/* Ícone de veterinário */}
-							</div>
-							<h3 className="text-2xl font-semibold text-white mb-4">
-								Apoio aos profissionais da área pet
-							</h3>
-							<p className="text-lg text-white">
-								Facilitamos a divulgação de clínicas
-								veterinárias, pet shops e outros serviços
-								especializados para garantir que os donos tenham
-								acesso fácil a profissionais confiáveis.
-							</p>
-						</div>
-						<div className="bg-indigo-900 p-6 rounded-lg shadow-lg transform transition-all hover:scale-105 hover:bg-indigo-800">
-							<div className="text-3xl text-pink-500 mb-4">
-								<FaPaw />
-							</div>
-							<h3 className="text-2xl font-semibold text-white mb-4">
-								Comodidade e recursos úteis
-							</h3>
-							<p className="text-lg text-white">
-								Oferecemos um conjunto de ferramentas e
-								informações que ajudam os donos a atender melhor
-								as necessidades dos seus animais de estimação,
-								promovendo uma convivência mais saudável e
-								feliz.
-							</p>
+			<main className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+				{/*<!-- Feed -->*/}
+				<section className="lg:col-span-2">
+					<div className="mb-4 bg-white dark:bg-gray-800 p-4 rounded shadow">
+						<textarea
+							className="w-full p-2 rounded bg-gray-100 dark:bg-gray-700"
+							placeholder="Compartilhe algo sobre seu pet..."
+						></textarea>
+						<div className="mt-2 flex justify-end">
+							<button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">
+								Postar
+							</button>
 						</div>
 					</div>
-				</div>
-			</section>
 
-			{/* Footer */}
-			<footer className="bg-indigo-800 text-center py-4 mt-auto">
-				<p className="text-sm text-white">
-					&copy; {new Date().getFullYear()} iPet - Todos os direitos
-					reservados
-				</p>
-			</footer>
+					{/*<!-- Post exemplo -->*    */}
+					<div className="bg-white dark:bg-gray-800 p-4 rounded shadow mb-4">
+						<div className="flex items-center gap-3 mb-2">
+                            <Image
+                                alt="avatar-pet"
+                                width={100}
+                                height={100}
+								src={account.pet.foto}
+								className="w-10 h-10 rounded-full"
+							/>
+							<div>
+                                <p className="font-semibold">{account.pet.nome}</p>
+								<p className="text-sm text-gray-500">
+									com {account.nome}
+								</p>
+							</div>
+						</div>
+						<p className="mb-2">Curtindo o parque hoje!</p>
+						<Image width={1000} height={1000} alt="pet" src={"https://sdmntprwestus3.oaiusercontent.com/files/00000000-b8c4-61fd-8557-11779115872c/raw?se=2025-05-21T05%3A49%3A14Z&sp=r&sv=2024-08-04&sr=b&scid=0108065d-cb26-5a08-bf1c-8769a1fe44ef&skoid=c953efd6-2ae8-41b4-a6d6-34b1475ac07c&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-20T22%3A32%3A29Z&ske=2025-05-21T22%3A32%3A29Z&sks=b&skv=2024-08-04&sig=TdBMcqrSyZhNDTpknvHoxqXORRc7MvtFy3uX66OiUBE%3D"} className="rounded max-h-[45vh] w-auto" />
+						<div className="flex gap-4 mt-2 text-gray-600">
+							❤️ Curtir | 💬 Comentar | 🔗 Compartilhar
+						</div>
+					</div>
+				</section>
+
+				{/*<!-- Sidebar -->*/}
+				<aside className="space-y-6">
+					{/*<!-- Marketplace -->*/}
+					<div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+						<h3 className="font-semibold mb-2">Marketplace 🛍️</h3>
+						<p>Confira os melhores produtos para seu pet!</p>
+						<button className="mt-2 text-blue-600 hover:underline">
+							Ver mais
+						</button>
+					</div>
+
+					{/*<!-- Clínicas -->*/}
+					<div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+						<h3 className="font-semibold mb-2">
+							Clínicas Veterinárias 🏥
+						</h3>
+						<ul className="space-y-1 text-sm">
+							<li>
+								🐾 PetCare – ⭐ 4.8
+								<button className="ml-2 text-blue-500 hover:underline">
+									Agendar
+								</button>
+							</li>
+							<li>
+								🐾 Vet Amigo – ⭐ 4.6
+								<button className="ml-2 text-blue-500 hover:underline">
+									Agendar
+								</button>
+							</li>
+						</ul>
+					</div>
+
+					{/*<!-- Meu Pet -->*/}
+					<div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+						<h3 className="font-semibold mb-2">Meu Pet 🐾</h3>
+						<div className="flex items-center gap-2">
+                            <Image
+                                alt="avatar-pet"
+                                width={100}
+                                height={100}
+								src={account.pet.foto}
+								className="w-10 h-10 rounded-full"
+							/>
+							<div>
+                                <p className="font-medium">{account.pet.nome}</p>
+								<p className="text-sm text-gray-500">{account.pet.idade} anos</p>
+							</div>
+						</div>
+						<button className="mt-2 text-blue-600 hover:underline">
+							Ver histórico
+						</button>
+					</div>
+				</aside>
+			</main>
 		</div>
 	);
 }

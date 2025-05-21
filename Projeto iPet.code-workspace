@@ -1,13 +1,17 @@
 {
 	"folders": [
+        {
+            "path": "./",
+            "name": "Projeto iPet (root)"
+        },
 		{
 			"path": "./site",
 			"name": "iPet Site"
 		},
-		{
-			"path": "./",
-			"name": "Projeto iPet (root)"
-		}
+        {
+            "name": "Esboços",
+            "path": "./esboços"
+        }
 	],
 	"settings": {}
 }

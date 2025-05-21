@@ -1,38 +1,37 @@
-import Link from "next/link";
-
-/**
- * The navbar component.
- *
- * This component renders a simple navigation bar with an iPet logo on the left, navigation links in the middle, and a "Entrar" button on the right.
- *
- * @returns The navbar component.
- */
+import { account } from "@/defaultData";
+import Image from "next/image";
 
 export default function Navbar() {
 	return (
-		<nav className="fixed top-0 left-0 w-full bg-indigo-900 shadow-lg py-4 px-8 flex justify-between items-center z-50">
-			<h1 className="text-2xl font-bold text-white">iPet</h1>
-			<ul className="hidden md:flex space-x-6">
-				<li>
-					<a href="#sobre" className="hover:text-pink-400 transition">
-						Sobre
-					</a>
-				</li>
-				<li>
-					<a
-						href="#o-que-fazemos"
-						className="hover:text-pink-400 transition"
-					>
-						O que fazemos
-					</a>
-				</li>
-			</ul>
-			<Link
-				href="/auth/login"
-				className="bg-pink-600 hover:bg-pink-700 text-white py-2 px-6 rounded-lg text-lg font-semibold transition-all"
-			>
-				Entrar
-			</Link>
+		<nav className="bg-white dark:bg-gray-800 px-6 py-3 flex justify-between items-center shadow">
+			<div className="text-xl font-bold">iPet</div>
+			<div className="flex gap-6 items-center">
+				<a href="/feed" className="hover:underline">
+					Feed
+				</a>
+				<a href="/marketplace" className="hover:underline">
+					Marketplace
+				</a>
+				<a href="/clinicas" className="hover:underline">
+					Clínicas
+				</a>
+				<a href="/mypet" className="hover:underline">
+					Meu Pet
+				</a>
+				<button className="relative">
+					🔔
+					<span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1">
+						3
+					</span>
+				</button>
+				<Image
+                    src={account.avatar}
+                    width={100}
+                    height={100}
+					alt="avatar"
+					className="w-8 h-8 rounded-full"
+				/>
+			</div>
 		</nav>
 	);
 }

@@ -1,13 +1,25 @@
-export interface User {
-    id: number;
-    name: string;
-    email: string;
-    password: string;
-    role: string;
+export interface Account {
+	id: string;
+    nome: string;
+    avatar: string;
+	bio: string;
+	pet: AccountPet;
+	auth: AccountAuth;
+	role: AccountRole;
 }
 
-export enum UserRole {
-    Admin = "admin",
-    User = "user"
-
+export interface AccountAuth {
+	email: string;
+	senha: string;
 }
+
+export interface AccountPet {
+	id: string;
+	nome: string;
+	idade: number;
+	foto: string;
+	bio: string;
+	raca: string;
+}
+
+export type AccountRole = "admin" | "user";
