@@ -1,37 +1,104 @@
-import { account } from "@/defaultData";
+import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
-export default function Navbar() {
+interface NavbarProps {
+	isAuth: boolean;
+	account?: {
+		avatar: string;
+		notifications?: number;
+	};
+}
+
+export default function Navbar({ isAuth, account }: NavbarProps) {
 	return (
-		<nav className="bg-white dark:bg-gray-800 px-6 py-3 flex justify-between items-center shadow">
-			<div className="text-xl font-bold">iPet</div>
-			<div className="flex gap-6 items-center">
-				<a href="/feed" className="hover:underline">
+		<header className="flex items-center justify-between px-6 py-4 border-b bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm">
+			{/* Logo */}
+			<h1 className="text-2xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
+				iPet
+			</h1>
+
+			{/* Links */}
+			<nav className="flex space-x-6 text-gray-700 dark:text-gray-100 text-sm font-medium">
+				<Link
+					href="/"
+					className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+				>
+					Início
+				</Link>
+				<Link
+					href="/feed"
+					className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+				>
 					Feed
-				</a>
-				<a href="/marketplace" className="hover:underline">
+				</Link>
+				<Link
+					href="/marketplace"
+					className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+				>
 					Marketplace
-				</a>
-				<a href="/clinicas" className="hover:underline">
+				</Link>
+				<Link
+					href="/clinicas"
+					className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+				>
 					Clínicas
-				</a>
-				<a href="/mypet" className="hover:underline">
-					Meu Pet
-				</a>
-				<button className="relative">
-					🔔
-					<span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1">
-						3
-					</span>
-				</button>
-				<Image
-                    src={account.avatar}
-                    width={100}
-                    height={100}
-					alt="avatar"
-					className="w-8 h-8 rounded-full"
-				/>
+				</Link>
+				<Link
+					href={isAuth ? "/mypet" : "#"}
+					className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+				>
+					{isAuth ? "Meu Pet" : "Perfil"}
+				</Link>
+			</nav>
+
+			{/* Ações */}
+			<div className="flex items-center space-x-4">
+				{isAuth ? (
+					<>
+						{/* Notificações */}
+						<button
+							className="relative text-xl hover:scale-110 transition-transform"
+							aria-label="Notificações"
+						>
+							<span role="img" aria-hidden>
+								🔔
+							</span>
+							{account?.notifications ? (
+								<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none shadow">
+									{account.notifications}
+								</span>
+							) : null}
+						</button>
+
+						{/* Avatar */}
+						{account?.avatar && (
+							<Image
+								src={account.avatar}
+								width={32}
+								height={32}
+								alt="Avatar"
+								className="rounded-full object-cover border-2 border-blue-600 dark:border-blue-400"
+							/>
+						)}
+					</>
+				) : (
+					<>
+						<Link
+							href="/login"
+							className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm transition-colors"
+						>
+							Entrar
+						</Link>
+						<Link
+							href="/register"
+							className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm transition-colors"
+						>
+							Cadastrar-se
+						</Link>
+					</>
+				)}
 			</div>
-		</nav>
+		</header>
 	);
 }

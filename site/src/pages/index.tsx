@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function Home() {
 	return (
 		<div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white">
-			<Navbar />
+			<Navbar isAuth={true} account={account} />
 			<main className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{/*<!-- Feed -->*/}
 				<section className="lg:col-span-2">
