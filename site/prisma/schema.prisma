@@ -1,0 +1,64 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+model Account {
+    id     String      @id @default(uuid()) @map("_id")
+    nome   String
+    avatar String
+    bio    String
+    email  String      @unique
+    senha  String
+    role   AccountRole
+
+    pets      Pet[]     @relation("UserPets")
+    posts     Post[]    @relation("UserPosts")
+    comments  Comment[]
+    followers String[] // lista de IDs de contas que seguem este usuário
+    following String[] // lista de IDs de contas que este usuário segue
+    createdAt DateTime  @default(now())
+}
+
+model Pet {
+    id      String  @id @default(uuid()) @map("_id")
+    nome    String
+    idade   Int
+    foto    String
+    bio     String
+    raca    String
+    tutor   Account @relation("UserPets", fields: [tutorId], references: [id])
+    tutorId String
+}
+
+model Post {
+    id        String   @id @default(uuid()) @map("_id")
+    content   String
+    imageUrl  String?
+    createdAt DateTime @default(now())
+    author    Account  @relation("UserPosts", fields: [authorId], references: [id])
+    authorId  String
+
+    likes    String[] // IDs de contas que curtiram
+    comments Comment[] @relation("PostComments")
+}
+
+model Comment {
+    id        String   @id @default(uuid()) @map("_id")
+    postId    String
+    authorId  String
+    text      String
+    createdAt DateTime @default(now())
+
+    post   Post    @relation("PostComments", fields: [postId], references: [id])
+    author Account @relation(fields: [authorId], references: [id])
+}
+
+enum AccountRole {
+    admin
+    user
+}
