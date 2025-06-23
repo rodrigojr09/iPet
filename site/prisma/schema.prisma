@@ -8,15 +8,12 @@ datasource db {
 }
 
 model Account {
-    id     String      @id @default(uuid()) @map("_id")
-    nome   String
-    avatar String
-    bio    String
-    email  String      @unique
-    senha  String
-    role   AccountRole
+    id    String      @id @default(uuid()) @map("_id")
+    email String      @unique
+    senha String
+    role  AccountRole
 
-    pets      Pet[]     @relation("UserPets")
+    profiles  Profile[] @relation("UserPets")
     posts     Post[]    @relation("UserPosts")
     comments  Comment[]
     followers String[] // lista de IDs de contas que seguem este usuário
@@ -24,15 +21,15 @@ model Account {
     createdAt DateTime  @default(now())
 }
 
-model Pet {
-    id      String  @id @default(uuid()) @map("_id")
-    nome    String
-    idade   Int
-    foto    String
-    bio     String
-    raca    String
-    tutor   Account @relation("UserPets", fields: [tutorId], references: [id])
-    tutorId String
+model Profile {
+    id         String  @id @default(uuid()) @map("_id")
+    nome       String
+    nascimento String
+    foto       String
+    bio        String
+    raca       String
+    account_id String
+    account    Account @relation("UserPets", fields: [account_id], references: [id])
 }
 
 model Post {

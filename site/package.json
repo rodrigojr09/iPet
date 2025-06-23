@@ -6,17 +6,23 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "prisma": "prisma generate",
     "lint": "next lint"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
     "axios": "^1.8.2",
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.18.1",
+    "lucide-react": "^0.518.0",
     "next": "15.2.1",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-toastify": "^11.0.5",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

@@ -9,7 +9,8 @@ export const authOptions = {
 				email: { label: "Email", type: "text" },
 				password: { label: "Senha", type: "password" },
 			},
-			async authorize(credentials) {
+            async authorize(credentials) {
+                console.log(credentials)
 				if (!credentials?.email || !credentials?.password) return null;
 
 				const res = await fetch(
@@ -24,7 +25,8 @@ export const authOptions = {
 					}
 				);
 
-				const user = await res.json();
+                const user = await res.json();
+                console.log(user);
 				if (res.ok && user) return user;
 				return null;
 			},
@@ -34,14 +36,14 @@ export const authOptions = {
 		strategy: "jwt",
 	},
 	pages: {
-		signIn: "/login",
+		signIn: "/auth/login",
 	},
 	callbacks: {
-		async jwt({ token, user }:any) {
+		async jwt({ token, user }: any) {
 			if (user) token.user = user;
 			return token;
 		},
-		async session({ session, token }:any) {
+		async session({ session, token }: any) {
 			if (token?.user) session.user = token.user;
 			return session;
 		},

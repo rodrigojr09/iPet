@@ -1,16 +1,10 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
-interface NavbarProps {
-	isAuth: boolean;
-	account?: {
-		avatar: string;
-		notifications?: number;
-	};
-}
-
-export default function Navbar({ isAuth, account }: NavbarProps) {
+export default function Navbar() {
+	const { account, profile } = useAuth();
 	return (
 		<header className="flex items-center justify-between px-6 py-4 border-b bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm">
 			{/* Logo */}
@@ -45,16 +39,16 @@ export default function Navbar({ isAuth, account }: NavbarProps) {
 					Clínicas
 				</Link>
 				<Link
-					href={isAuth ? "/mypet" : "#"}
+					href={profile ? "/mypet" : "#"}
 					className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
 				>
-					{isAuth ? "Meu Pet" : "Perfil"}
+					{profile ? "Meu Pet" : "Perfil"}
 				</Link>
 			</nav>
 
 			{/* Ações */}
 			<div className="flex items-center space-x-4">
-				{isAuth ? (
+				{profile ? (
 					<>
 						{/* Notificações */}
 						<button
@@ -64,17 +58,17 @@ export default function Navbar({ isAuth, account }: NavbarProps) {
 							<span role="img" aria-hidden>
 								🔔
 							</span>
-							{account?.notifications ? (
+							{
 								<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none shadow">
-									{account.notifications}
+									0
 								</span>
-							) : null}
+							}
 						</button>
 
 						{/* Avatar */}
-						{account?.avatar && (
+						{profile.avatar && (
 							<Image
-								src={account.avatar}
+								src={profile.avatar}
 								width={32}
 								height={32}
 								alt="Avatar"
