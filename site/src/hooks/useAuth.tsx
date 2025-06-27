@@ -12,10 +12,7 @@ export default function AuthProvider({ children }: any) {
 	const router = useRouter();
 	const [account, setAccount] = useState<AuthProps["account"] | undefined>();
 	const [profile, setProfile] = useState<AuthProps["profile"] | undefined>();
-
-	const teste = ["/auth/login", "/auth/register"].filter((path) =>
-		router.asPath.startsWith(path)
-	);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		if (status === "authenticated") {
@@ -30,9 +27,20 @@ export default function AuthProvider({ children }: any) {
 	}, [data?.user.id, status]);
 
 	useEffect(() => {
-		if (teste.length !== 0) router.push("/");
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [router.asPath, teste,router.push]);
+		if (
+			router.asPath.startsWith("/auth/login") ||
+			router.asPath.startsWith("/auth/register")
+		) {
+			if (status === "authenticated") {
+				router.push("/");
+			} else {
+				setLoading(false);
+			}
+		} else {
+			setLoading(false);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [router.asPath]);
 
 	function enter(profile_id: string) {}
 
@@ -40,7 +48,7 @@ export default function AuthProvider({ children }: any) {
 		signOut();
 	}
 
-	if (teste.length === 0 && status !== "loading")
+	if (!loading)
 		return (
 			<AuthContext.Provider value={{ account, profile, enter, logout }}>
 				{children}

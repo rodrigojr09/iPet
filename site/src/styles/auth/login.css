@@ -3,108 +3,108 @@
 .inspiration {
 	@apply fixed bottom-0 right-0 p-[10px] text-center no-underline text-[12px] text-[#969696] font-[Gill_Sans];
 }
-.login-page.inspiration img {
+.inspiration img {
 	@apply w-[60px];
 }
-.login-page .ear {
+ .ear {
 	@apply absolute -top-[110px] w-[250px] h-[250px] rounded-full bg-[#243946];
 }
-.login-page.ear.ear--left {
+.ear.ear--left {
 	@apply -left-[135px];
 }
-.login-page.ear.ear--right {
+.ear.ear--right {
 	@apply -right-[135px];
 }
-.login-page.face {
+.face {
 	@apply flex flex-col items-center w-[200px] h-[150px] mt-[80px] mx-auto mb-[10px] transition-transform origin-[center_20px];
 	transform: rotate(var(--rotate-head));
 }
-.login-page.eye {
+.eye {
 	@apply inline-block w-[25px] h-[25px] rounded-full bg-[#243946];
 }
-.login-page.eye.eye--left {
+.eye.eye--left {
 	@apply mr-[40px];
 }
-.login-page.eye.eye--right {
+.eye.eye--right {
 	@apply ml-[40px];
 }
-.login-page.eye .glow {
+.eye .glow {
 	@apply relative top-[3px] -right-[12px] w-[12px] h-[6px] rounded-full bg-white rotate-[38deg];
 }
-.login-page.nose {
+.nose {
 	@apply relative top-[30px];
 	transform: scale(1.1);
 }
-.login-page.nose .glow {
+.nose .glow {
 	@apply absolute top-[3px] left-[32%] w-[15px] h-[8px] rounded-full bg-[#476375];
 }
-.login-page.mouth {
+.mouth {
 	@apply relative mt-[45px];
 }
-.login-pagesvg.smile {
+svg.smile {
 	@apply absolute -left-[28px] -top-[19px] scale-x-[1.1];
 	stroke: #243946;
 }
-.login-page.mouth-hole {
+.mouth-hole {
 	@apply absolute top-0 -left-1/2 w-[60px] h-[15px] rounded-t-full bg-[#243946] rotate-180 -z-[1];
 }
-.login-page.tongue {
+.tongue {
 	@apply relative top-[5px] w-[30px] h-[20px] bg-[#ffd7dd] origin-top;
 	transform: rotateX(60deg);
 }
-.login-page.tongue.breath {
+.tongue.breath {
 	-webkit-animation: breath 0.3s infinite linear;
 	animation: breath 0.3s infinite linear;
 }
-.login-page.tongue-top {
+.tongue-top {
 	@apply absolute -bottom-[15px] w-[30px] h-[30px] rounded-full bg-[#ffd7dd];
 }
-.login-page.line {
+.line {
 	@apply absolute top-0 w-[30px] h-[5px] bg-[#fcb7bf];
 }
-.login-page.median {
+.median {
 	@apply absolute top-0 left-1/2 -translate-x-1/2 w-[4px] h-[25px] rounded bg-[#fcb7bf];
 }
-.login-page.hands {
+.hands {
 	@apply relative;
 }
-.login-page.hands .hand {
+.hands .hand {
 	@apply absolute -top-[6px] flex transition-transform duration-500 ease-in-out z-[1];
 }
-.login-page.hands .hand--left {
+.hands .hand--left {
 	@apply left-[50px];
 }
-.login-page.hands .hand--right {
+.hands .hand--right {
 	@apply right-[50px];
 }
-.login-page/* Transformações dinâmicas deixadas no estilo inline ou JS */
+/* Transformações dinâmicas deixadas no estilo inline ou JS */
 .hands .finger {
 	@apply relative z-0;
 }
-.login-page.hands .finger .bone {
+.hands .finger .bone {
 	@apply w-[20px] bg-[#fac555] border-x-2 border-t-0 border-b-0 border-[#243946];
 	height: 20px;
 }
-.login-page.hands .finger .nail {
+.hands .finger .nail {
 	@apply absolute left-0 w-[20px] h-[18px] rounded-full border-2 border-[#243946] bg-[#fac555] -z-[1];
 	top: 10px;
 }
-.login-page.hands .finger:nth-child(1),
-.login-page .hands .finger:nth-child(3) {
+.hands .finger:nth-child(1),
+ .hands .finger:nth-child(3) {
 	@apply left-[4px] z-[1];
 }
-.login-page.hands .finger:nth-child(1) .bone,
-.login-page .hands .finger:nth-child(3) .bone {
+.hands .finger:nth-child(1) .bone,
+ .hands .finger:nth-child(3) .bone {
 	height: 10px;
 }
-.login-page.hands .finger:nth-child(3) {
+.hands .finger:nth-child(3) {
 	@apply -left-[4px];
 }
-.login-page.hands .finger:nth-child(2) {
+.hands .finger:nth-child(2) {
 	@apply -top-[5px] z-[2];
 }
-.login-page.hands .finger:nth-child(1) .nail,
-.login-page .hands .finger:nth-child(3) .nail {
+.hands .finger:nth-child(1) .nail,
+ .hands .finger:nth-child(3) .nail {
 	top: 0px;
 }
 @keyframes breath {

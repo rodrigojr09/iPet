@@ -14,7 +14,7 @@ export default function LoginForm() {
 			</Head>
 
 			{/* Estrutura principal */}
-			<div className="w-screen login-page h-screen bg-blue-100 flex items-center justify-center overflow-hidden text-xs">
+			<div className="w-screen h-screen bg-blue-100 flex items-center justify-center overflow-hidden text-xs">
 				<div className="relative w-[400px] h-[490px] rounded-md overflow-hidden bg-gradient-to-tr from-yellow-500 to-yellow-300">
 					{/* ✂️ Structuras complexas com CSS puro → ver seção “Estilos a parte” */}
 					<div className="ear ear--left"></div>
