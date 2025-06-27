@@ -18,7 +18,9 @@ interface Profile {
 
 export default function Register() {
 	const [step, setStep] = useState(1);
-	const error = useError();
+    const error = useError();
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
 	const [account, setAccount] = useState<Account>({
 		email: "",
@@ -203,10 +205,11 @@ export default function Register() {
 						/>
 
 						<button
-							type="submit"
+                            type="submit"
+                            disabled={loading}
 							className="mt-6 rounded-full border border-[#ff4b2b] bg-[#ff4b2b] px-12 py-3 text-xs font-bold uppercase text-white transition-transform active:scale-95 focus:outline-none"
 						>
-							Criar
+							{ loading ? "Carregando..." : "Criar"}
 						</button>
 					</form>
 				</div>

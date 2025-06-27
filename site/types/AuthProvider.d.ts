@@ -1,9 +1,7 @@
-import { Account } from ".";
-
+import { Account, Prisma, Profile } from "@prisma/client";
 export interface AuthProps {
-	account?: Account;
+	account?: Prisma.AccountGetPayload<{ include: { profiles: true } }> | null;
 	profile?: Profile;
 	logout: () => void;
-	register: (account: Account) => void;
 	enter: (profile_id: string) => void;
 }

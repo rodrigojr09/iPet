@@ -2,10 +2,12 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
-	const { account, profile } = useAuth();
-	return (
+    const { account, profile } = useAuth();
+    const {status} = useSession();
+	if(status !== "loading")return (
 		<header className="flex items-center justify-between px-6 py-4 border-b bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm">
 			{/* Logo */}
 			<h1 className="text-2xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
@@ -66,26 +68,26 @@ export default function Navbar() {
 						</button>
 
 						{/* Avatar */}
-						{profile.avatar && (
+						{profile.foto && (
 							<Image
-								src={profile.avatar}
+								src={`http://localhost:3000/api/avatars/${profile.foto}`}
 								width={32}
 								height={32}
 								alt="Avatar"
-								className="rounded-full object-cover border-2 border-blue-600 dark:border-blue-400"
+								className="rounded-full object-cover max-h-[32] max-w-[32] border-2 border-blue-600 dark:border-blue-400"
 							/>
 						)}
 					</>
 				) : (
 					<>
 						<Link
-							href="/login"
+							href="/auth/login"
 							className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm transition-colors"
 						>
 							Entrar
 						</Link>
 						<Link
-							href="/register"
+							href="/auth/register"
 							className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm transition-colors"
 						>
 							Cadastrar-se

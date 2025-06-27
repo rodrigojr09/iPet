@@ -26,7 +26,6 @@ export const authOptions = {
 				);
 
                 const user = await res.json();
-                console.log(user);
 				if (res.ok && user) return user;
 				return null;
 			},
@@ -40,14 +39,18 @@ export const authOptions = {
 	},
 	callbacks: {
 		async jwt({ token, user }: any) {
-			if (user) token.user = user;
+            if (user) token.user = user;
+            console.log(user)
 			return token;
 		},
 		async session({ session, token }: any) {
 			if (token?.user) session.user = token.user;
 			return session;
 		},
-	},
+    },
+    jwt: {
+        secret: process.env.NEXTAUTH_SECRET,
+    },
 };
 
 export default NextAuth(authOptions as any);

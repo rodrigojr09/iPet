@@ -19,6 +19,7 @@ export default async function handle(
     try {
         const user = await prisma.account.findUnique({
             where: { id: user_id as string },
+            include: { profiles: req.query.profiles && req.query.profiles === "true" ?  true : false },
         });
 
         if(!user) {

@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
+import moment from "moment-timezone";
 
 export default function Home() {
 	const { account, profile } = useAuth();
@@ -85,29 +86,42 @@ export default function Home() {
 						</ul>
 					</div>
 
-					{/*<!-- Meu Pet -->*/}
-					<div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-						<h3 className="font-semibold mb-2">Meu Pet 🐾</h3>
-						<div className="flex items-center gap-2">
-							{/*<Image
-								alt="avatar-pet"
-								width={100}
-								height={100}
-								src={profile.nome}
-								className="w-10 h-10 rounded-full"
-                            />
-                            */}
-							<div>
-								<p className="font-medium">{""}</p>
-								<p className="text-sm text-gray-500">
-									{""} anos
-								</p>
-							</div>
+					{/*<!-- Meus Pet -->*/}
+					{account && (
+						<div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+							<h3 className="font-semibold mb-2">Meus Pet 🐾</h3>
+							{account.profiles.map((pet) => (
+								<div
+									key={pet.id}
+									className="flex items-center gap-2"
+								>
+									<div className="w-10 h-10 relative">
+										<Image
+											alt="avatar-pet"
+											src={`http://localhost:3000/api/avatars/${pet.foto}`}
+											fill
+											className="rounded-full object-cover"
+											sizes="40px"
+										/>
+									</div>
+
+									<div>
+										<p className="font-medium">{""}</p>
+										<p className="text-sm text-gray-500">
+											{moment().diff(
+												pet.nascimento,
+												"years"
+											)}{" "}
+											anos
+										</p>
+									</div>
+								</div>
+							))}
+							<button className="mt-2 text-blue-600 hover:underline">
+								Adicionar Pet
+							</button>
 						</div>
-						<button className="mt-2 text-blue-600 hover:underline">
-							Ver histórico
-						</button>
-					</div>
+					)}
 				</aside>
 			</main>
 		</div>

@@ -13,7 +13,7 @@ declare module "next-auth" {
 		id: string;
 		name: string;
 		email: string;
-    }
+	}
 }
 
 declare module "next-auth/jwt" {
