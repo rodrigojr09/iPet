@@ -31,6 +31,7 @@ export default function AuthProvider({ children }: any) {
 
 	useEffect(() => {
 		if (teste.length !== 0) router.push("/");
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.asPath, teste,router.push]);
 
 	function enter(profile_id: string) {}
