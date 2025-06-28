@@ -4,6 +4,7 @@ import { AuthProps } from "../../types/AuthProvider";
 import axios from "axios";
 import { Account, Profile } from "@prisma/client";
 import { useRouter } from "next/router";
+import { BoneIcon } from "lucide-react";
 
 const AuthContext = createContext<AuthProps | undefined>(undefined);
 
@@ -22,7 +23,10 @@ export default function AuthProvider({ children }: any) {
 				);
 				setAccount(res.data);
 				setProfile(res.data.profiles[0]);
+				setLoading(false);
 			})();
+		} else if (status === "unauthenticated") {
+			setLoading(false);
 		}
 	}, [data?.user.id, status]);
 
@@ -33,11 +37,7 @@ export default function AuthProvider({ children }: any) {
 		) {
 			if (status === "authenticated") {
 				router.push("/");
-			} else {
-				setLoading(false);
 			}
-		} else {
-			setLoading(false);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.asPath]);
@@ -50,11 +50,15 @@ export default function AuthProvider({ children }: any) {
 
 	if (!loading)
 		return (
-			<AuthContext.Provider value={{ account, profile, enter, logout }}>
+			<AuthContext.Provider
+				value={{ account, profile, enter, logout, status: loading }}
+			>
 				{children}
 			</AuthContext.Provider>
 		);
-	return null;
+    return <div className="w-screen h-screen items-center flex justify-center">
+        <BoneIcon width={100} height={100}  className="animate-spin duration-1000" />
+    </div>;
 }
 
 export function useAuth() {

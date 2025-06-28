@@ -14,20 +14,21 @@ model Account {
     role  AccountRole
 
     profiles  Profile[] @relation("UserPets")
-    posts     Post[]    @relation("UserPosts")
-    comments  Comment[]
-    followers String[] // lista de IDs de contas que seguem este usuário
-    following String[] // lista de IDs de contas que este usuário segue
     createdAt DateTime  @default(now())
 }
 
 model Profile {
-    id         String  @id @default(uuid()) @map("_id")
+    id         String    @id @default(uuid()) @map("_id")
     nome       String
     nascimento String
     foto       String
     bio        String
     raca       String
+    followers  String[] // lista de IDs de contas que seguem este usuário
+    following  String[] // lista de IDs de contas que este usuário segue
+    comments   Comment[] @relation("AuthorComments")
+    posts      Post[]    @relation("UserPosts")
+
     account_id String
     account    Account @relation("UserPets", fields: [account_id], references: [id])
 }
@@ -37,8 +38,8 @@ model Post {
     content   String
     imageUrl  String?
     createdAt DateTime @default(now())
-    author    Account  @relation("UserPosts", fields: [authorId], references: [id])
     authorId  String
+    author    Profile  @relation("UserPosts", fields: [authorId], references: [id])
 
     likes    String[] // IDs de contas que curtiram
     comments Comment[] @relation("PostComments")
@@ -52,7 +53,7 @@ model Comment {
     createdAt DateTime @default(now())
 
     post   Post    @relation("PostComments", fields: [postId], references: [id])
-    author Account @relation(fields: [authorId], references: [id])
+    author Profile @relation("AuthorComments", fields: [authorId], references: [id])
 }
 
 enum AccountRole {
