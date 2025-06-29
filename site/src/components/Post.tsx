@@ -7,7 +7,7 @@ interface PostProps {
 
 export default function Post({ post }: PostProps) {
 	return (
-		<div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow mb-6 w-1/2 mx-auto">
+		<div className="bg-white dark:bg-gray-800 p-5 rounded-xl w-full shadow mb-6 md:w-1/2 mx-auto">
 			{/* Header: Avatar e Nome */}
 			<div className="flex items-center gap-4 mb-4">
 				{post.author.foto ? (
