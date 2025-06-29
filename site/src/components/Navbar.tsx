@@ -1,16 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { Menu, X } from "lucide-react";
+import { Profile } from "@prisma/client";
 
 export default function Navbar() {
-	const { account, profile, logout } = useAuth();
+	const { profile, logout } = useAuth();
+	const [search, setSearch] = useState("");
 	const [isOpen, setIsOpen] = useState(false);
+	const [profiles, setProfiles] = useState<Profile[]>([]);
+
+	useEffect(() => {
+		fetch("/api/profile")
+			.then((res) => res.json())
+			.then((data) => setProfiles(data));
+	}, []);
 
 	const toggleMenu = () => setIsOpen(!isOpen);
 
+	const filterProfiles = profiles.filter((profile) => {
+		return profile.nome.toLowerCase().includes(search.toLowerCase());
+	});
 
 	return (
 		<header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
@@ -19,9 +31,8 @@ export default function Navbar() {
 				<h1 className="text-2xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
 					iPet
 				</h1>
-
 				{/* Menu Desktop */}
-				<nav className="hidden md:flex space-x-6 text-gray-700 dark:text-gray-100 text-sm font-medium">
+				<nav className="hidden w-full justify-center md:flex space-x-6 py-2 text-gray-700 dark:text-gray-100 text-sm font-medium">
 					<Link
 						href="/"
 						className="hover:text-blue-600 dark:hover:text-blue-400"
@@ -53,7 +64,6 @@ export default function Navbar() {
 						{profile ? "Meu Pet" : "Perfil"}
 					</Link>
 				</nav>
-
 				{/* Ações Desktop */}
 				<div className="hidden md:flex items-center space-x-4">
 					{profile ? (
@@ -71,13 +81,14 @@ export default function Navbar() {
 
 							{/* Avatar */}
 							{profile.foto && (
-								<Image
-									src={profile.foto}
-									width={32}
-									height={32}
-									alt="Avatar"
-									className="rounded-full max-h-[32]  object-cover border-2 border-blue-600 dark:border-blue-400"
-								/>
+								<div className="w-[32] h-[32] relative">
+									<Image
+										alt="avatar-pet"
+										src={profile.foto}
+										fill
+										className="rounded-full object-cover border border-green-500"
+									/>
+								</div>
 							)}
 
 							<button
@@ -194,6 +205,40 @@ export default function Navbar() {
 					</div>
 				</div>
 			)}
+			{/* Barra de Pesquisa */}
+			<div className="hidden w-full md:flex justify-center p-4 relative">
+				<div className="flex items-center w-full max-w-md relative">
+					<input
+						type="text"
+						placeholder="Buscar"
+						onChange={(e) => setSearch(e.target.value)}
+						className="flex-grow py-2 px-4 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					/>
+					<button className="ml-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-full text-sm font-semibold transition-colors">
+						Buscar
+					</button>
+
+					{/* Dropdown de resultados */}
+					{filterProfiles.length > 0 && search !== "" && (
+						<div className="absolute max-h-64 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 mt-2">
+							<ul className="divide-y divide-gray-200 dark:divide-gray-700">
+								{filterProfiles.map((result) => (
+									<li
+										key={result.id}
+										className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-800 dark:text-gray-100"
+										onClick={() => {
+											setSearch(result.nome);
+											// Adicione a ação desejada ao clicar no resultado
+										}}
+									>
+										{result.nome}
+									</li>
+								))}
+							</ul>
+						</div>
+					)}
+				</div>
+			</div>
 		</header>
 	);
 }

@@ -19,6 +19,7 @@ model Account {
 
 model Profile {
     id         String    @id @default(uuid()) @map("_id")
+    tag        String    @unique
     nome       String
     nascimento String
     foto       String
@@ -35,7 +36,8 @@ model Profile {
 
 model Post {
     id        String   @id @default(uuid()) @map("_id")
-    content   String
+    titulo    String?
+    legenda   String?
     imageUrl  String?
     createdAt DateTime @default(now())
     authorId  String
@@ -56,7 +58,21 @@ model Comment {
     author Profile @relation("AuthorComments", fields: [authorId], references: [id])
 }
 
+type Notification {
+    id        String           @default(uuid())
+    type      NotificationType
+    data      Json?
+    message   String
+    createdAt DateTime         @default(now())
+}
+
 enum AccountRole {
     admin
     user
+}
+
+enum NotificationType {
+    like
+    comment
+    follow
 }

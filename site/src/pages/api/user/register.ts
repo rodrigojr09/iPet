@@ -38,12 +38,21 @@ export default async function handle(
 		const nome = fields.nome?.toString();
 		const nascimento = fields.nascimento?.toString();
 		const raca = fields.raca?.toString();
+		const tag = fields.tag?.toString();
 		const fotoField = files.foto;
 		const foto = (
 			Array.isArray(fotoField) ? fotoField[0] : fotoField
 		) as File;
 
-		if (!email || !senha || !nome || !nascimento || !raca || !foto) {
+		if (
+			!email ||
+			!senha ||
+			!nome ||
+			!nascimento ||
+			!raca ||
+			!foto ||
+			!tag
+		) {
 			return res.status(400).json({ error: "Missing required fields" });
 		}
 
@@ -53,6 +62,13 @@ export default async function handle(
 			});
 			if (existingUser) {
 				return res.status(409).json({ error: "Email already in use" });
+			}
+
+			const existingTag = await prisma.profile.findUnique({
+				where: { tag },
+			});
+			if (existingTag) {
+				return res.status(409).json({ error: "Tag already in use" });
 			}
 
 			const hashedSenha = await bcrypt.hash(senha, 10);
@@ -86,14 +102,16 @@ export default async function handle(
 					.json({ error: "Failed to upload image" });
 			}
 
-            const { data } = supabase.storage.from("avatars").getPublicUrl(storagePath);
-            console.log(data)
-            const fotoUrl = data.publicUrl || "";
-            
+			const { data } = supabase.storage
+				.from("avatars")
+				.getPublicUrl(storagePath);
+			console.log(data);
+			const fotoUrl = data.publicUrl || "";
 
 			const profileCreated = await prisma.profile.create({
 				data: {
 					id: uuidv4(),
+					tag,
 					account_id: user.id,
 					nome,
 					nascimento,

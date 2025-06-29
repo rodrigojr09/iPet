@@ -11,6 +11,7 @@ interface Account {
 	confirmarSenha?: string;
 }
 interface Profile {
+    tag: string;
 	nome: string;
 	nascimento: string;
 	raca: string;
@@ -28,7 +29,8 @@ export default function Register() {
 		senha: "",
 		confirmarSenha: "",
 	});
-	const [profile, setProfile] = useState<Profile>({
+    const [profile, setProfile] = useState<Profile>({
+        tag: "",
 		nome: "",
 		nascimento: "",
 		raca: "",
@@ -97,7 +99,8 @@ export default function Register() {
 			formData.append("nome", profile.nome);
 			formData.append("nascimento", profile.nascimento);
 			formData.append("raca", profile.raca);
-			formData.append("foto", profile.foto as any); // blob ou file
+            formData.append("foto", profile.foto as any); // blob ou file
+            formData.append("tag", profile.tag);
 
 			const res = await axios.post("/api/user/register", formData);
 
@@ -202,7 +205,17 @@ export default function Register() {
 						<h1 className="font-extrabold text-3xl mb-4">
 							Agora, Crie o perfil do seu Pet
 						</h1>
-
+						<input
+							name="tag"
+							type="text"
+							placeholder="Tag"
+							className="bg-gray-200 border-0 rounded p-3 my-2 w-full placeholder-gray-500"
+							onChange={handleChangeProfile}
+							value={profile.tag}
+							required
+							aria-required="true"
+							aria-label="Tag do Perfil"
+						/>
 						<input
 							name="nome"
 							type="text"
@@ -257,48 +270,54 @@ export default function Register() {
 						className="bg-gradient-to-r from-[#ff4b2b] to-[#ff416c] bg-no-repeat bg-cover bg-left relative w-[200%] h-full transform transition-transform duration-600 ease-in-out"
 						style={{ left: "-100%" }}
 					>
-						{step === 1 && <div className="absolute top-0 right-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center text-white transition-transform duration-600 ease-in-out transform translate-x-0">
-							<h1 className="text-4xl font-extrabold mb-2">
-								Olá, seja bem vindo!
-							</h1>
-							<p>
-								Antes de mais nada, vamos criar uma conta para
-								você!
-							</p>
-						</div>}
+						{step === 1 && (
+							<div className="absolute top-0 right-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center text-white transition-transform duration-600 ease-in-out transform translate-x-0">
+								<h1 className="text-4xl font-extrabold mb-2">
+									Olá, seja bem vindo!
+								</h1>
+								<p>
+									Antes de mais nada, vamos criar uma conta
+									para você!
+								</p>
+							</div>
+						)}
 
-						{step ===2 && <div className="absolute top-0 right-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center text-white transition-transform duration-600 ease-in-out transform translate-x-0">
-							<h1 className="text-4xl font-extrabold mb-4">
-								Dê um rosto ao seu Pet!
-							</h1>
+						{step === 2 && (
+							<div className="absolute top-0 right-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center text-white transition-transform duration-600 ease-in-out transform translate-x-0">
+								<h1 className="text-4xl font-extrabold mb-4">
+									Dê um rosto ao seu Pet!
+								</h1>
 
-							{profile.foto && (
-								<div className="w-32 h-32 mx-auto mb-2">
-									<Image
-										src={URL.createObjectURL(profile.foto)}
-										alt="Preview do pet"
-										width={100}
-										height={100}
-										className="w-full h-full object-cover rounded-full border border-gray-300 shadow"
-									/>
-								</div>
-							)}
-							<input
-								type="file"
-								className="hidden"
-								onChange={handleFile}
-								required
-								id="file"
-							/>
-							<label
-								className="mt-6 rounded-full border border-[#ff4b2b] bg-[#ff4b2b] px-12 py-3 text-xs font-bold uppercase text-white transition-transform active:scale-95 focus:outline-none"
-								htmlFor="file"
-							>
-								{profile.foto
-									? "Alterar imagem"
-									: "Selecionar imagem"}
-							</label>
-						</div>}
+								{profile.foto && (
+									<div className="w-32 h-32 mx-auto mb-2">
+										<Image
+											src={URL.createObjectURL(
+												profile.foto
+											)}
+											alt="Preview do pet"
+											width={100}
+											height={100}
+											className="w-full h-full object-cover rounded-full border border-gray-300 shadow"
+										/>
+									</div>
+								)}
+								<input
+									type="file"
+									className="hidden"
+									onChange={handleFile}
+									required
+									id="file"
+								/>
+								<label
+									className="mt-6 rounded-full border border-[#ff4b2b] bg-[#ff4b2b] px-12 py-3 text-xs font-bold uppercase text-white transition-transform active:scale-95 focus:outline-none"
+									htmlFor="file"
+								>
+									{profile.foto
+										? "Alterar imagem"
+										: "Selecionar imagem"}
+								</label>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

@@ -11,13 +11,8 @@ export default async function handle(
 	}
 
 	try {
-		const posts = await prisma.post.findMany({
-			include: {
-				author: true,
-				comments: true,
-			},
-		});
-		return res.status(200).json(posts);
+		const profiles = await prisma.profile.findMany();
+		return res.status(200).json(profiles);
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ error: "Internal server error" });

@@ -11,13 +11,21 @@ export default async function handle(
 	}
 
 	try {
-		const posts = await prisma.post.findMany({
+		const profile = await prisma.profile.findFirst({
+			where: { tag: req.query.tag as string },
 			include: {
-				author: true,
-				comments: true,
+				posts: {
+					include: {
+						author: true,
+						comments: true,
+					},
+				},
 			},
 		});
-		return res.status(200).json(posts);
+		if (profile === null)
+			return res.status(404).json({ error: "Profile not found" });
+
+		return res.status(200).json(profile);
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ error: "Internal server error" });
