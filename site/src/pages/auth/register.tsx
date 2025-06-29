@@ -3,24 +3,25 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import { useError } from "@/hooks/useError";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 
 interface Account {
 	email: string;
 	senha: string;
 	confirmarSenha?: string;
 }
-
 interface Profile {
 	nome: string;
 	nascimento: string;
 	raca: string;
+	foto: File | null;
 }
 
 export default function Register() {
 	const [step, setStep] = useState(1);
-    const error = useError();
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+	const error = useError();
+	const [loading, setLoading] = useState(false);
+	const [success, setSuccess] = useState(false);
 
 	const [account, setAccount] = useState<Account>({
 		email: "",
@@ -31,6 +32,7 @@ export default function Register() {
 		nome: "",
 		nascimento: "",
 		raca: "",
+		foto: null,
 	});
 
 	const handleChangeAccount = useCallback(
@@ -48,6 +50,14 @@ export default function Register() {
 		},
 		[]
 	);
+
+	const handleFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+		const { files } = e.target;
+		if (files && files[0]) {
+			const file = files[0];
+			setProfile((prev) => ({ ...prev, foto: file }));
+		}
+	}, []);
 
 	const handleNextStep = () => {
 		// Validação simples do primeiro passo
@@ -68,26 +78,49 @@ export default function Register() {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (!profile.nome.trim() || !profile.nascimento || !profile.raca.trim()) {
+
+		if (
+			!profile.nome.trim() ||
+			!profile.nascimento ||
+			!profile.raca.trim() ||
+			!profile.foto
+		) {
 			error.throwError("Preencha todos os campos do perfil.");
 			return;
 		}
+
 		try {
-			
-            const res = await axios.post("/api/user/register", { ...account, profile });
-            if (res.status === 201) {
-                signIn("credentials", { email: account.email, password: account.senha, redirect: true,callbackUrl: "/" });
-            } else {
-                error.throwError("Erro ao registrar usuário.");
-                console.log(res.statusText);
-            }
+			setLoading(true);
+			const formData = new FormData();
+			formData.append("email", account.email);
+			formData.append("senha", account.senha);
+			formData.append("nome", profile.nome);
+			formData.append("nascimento", profile.nascimento);
+			formData.append("raca", profile.raca);
+			formData.append("foto", profile.foto as any); // blob ou file
+
+			const res = await axios.post("/api/user/register", formData);
+
+			if (res.status === 201) {
+				await signIn("credentials", {
+					email: account.email,
+					password: account.senha,
+					redirect: true,
+					callbackUrl: "/",
+				});
+			} else {
+				error.throwError("Erro ao registrar usuário.");
+			}
 		} catch (err) {
+			console.error(err);
 			error.throwError("Erro ao registrar usuário.");
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
+		<div className="flex justify-center items-center min-h-screen bg-gray-100 px-4 text-black">
 			<div
 				id="container"
 				className={`relative overflow-hidden rounded-lg shadow-2xl bg-white max-w-full w-[768px] min-h-[480px] transition-all duration-600 ease-in-out ${
@@ -205,11 +238,11 @@ export default function Register() {
 						/>
 
 						<button
-                            type="submit"
-                            disabled={loading}
+							type="submit"
+							disabled={loading}
 							className="mt-6 rounded-full border border-[#ff4b2b] bg-[#ff4b2b] px-12 py-3 text-xs font-bold uppercase text-white transition-transform active:scale-95 focus:outline-none"
 						>
-							{ loading ? "Carregando..." : "Criar"}
+							{loading ? "Carregando..." : "Criar"}
 						</button>
 					</form>
 				</div>
@@ -224,7 +257,7 @@ export default function Register() {
 						className="bg-gradient-to-r from-[#ff4b2b] to-[#ff416c] bg-no-repeat bg-cover bg-left relative w-[200%] h-full transform transition-transform duration-600 ease-in-out"
 						style={{ left: "-100%" }}
 					>
-						<div className="absolute top-0 left-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center text-white transition-transform duration-600 ease-in-out transform -translate-x-1/5">
+						{step === 1 && <div className="absolute top-0 right-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center text-white transition-transform duration-600 ease-in-out transform translate-x-0">
 							<h1 className="text-4xl font-extrabold mb-2">
 								Olá, seja bem vindo!
 							</h1>
@@ -232,14 +265,40 @@ export default function Register() {
 								Antes de mais nada, vamos criar uma conta para
 								você!
 							</p>
-						</div>
+						</div>}
 
-						<div className="absolute top-0 right-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center text-white transition-transform duration-600 ease-in-out transform translate-x-0">
-							<h1 className="text-4xl font-extrabold mb-2">
-								Agora, é a vez do seu animalzinho!
+						{step ===2 && <div className="absolute top-0 right-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center text-white transition-transform duration-600 ease-in-out transform translate-x-0">
+							<h1 className="text-4xl font-extrabold mb-4">
+								Dê um rosto ao seu Pet!
 							</h1>
-							<p>Vamos criar um perfil para ele</p>
-						</div>
+
+							{profile.foto && (
+								<div className="w-32 h-32 mx-auto mb-2">
+									<Image
+										src={URL.createObjectURL(profile.foto)}
+										alt="Preview do pet"
+										width={100}
+										height={100}
+										className="w-full h-full object-cover rounded-full border border-gray-300 shadow"
+									/>
+								</div>
+							)}
+							<input
+								type="file"
+								className="hidden"
+								onChange={handleFile}
+								required
+								id="file"
+							/>
+							<label
+								className="mt-6 rounded-full border border-[#ff4b2b] bg-[#ff4b2b] px-12 py-3 text-xs font-bold uppercase text-white transition-transform active:scale-95 focus:outline-none"
+								htmlFor="file"
+							>
+								{profile.foto
+									? "Alterar imagem"
+									: "Selecionar imagem"}
+							</label>
+						</div>}
 					</div>
 				</div>
 			</div>

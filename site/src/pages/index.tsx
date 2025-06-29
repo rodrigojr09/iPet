@@ -24,7 +24,7 @@ export default function Home() {
 						</div>
 					</div>
 
-					<Feed/>
+					<Feed />
 				</section>
 
 				{/*<!-- Sidebar -->*/}
@@ -71,7 +71,7 @@ export default function Home() {
 									<div className="w-10 h-10 relative">
 										<Image
 											alt="avatar-pet"
-											src={`http://localhost:3000/api/avatars/${pet.foto}`}
+											src={pet.foto}
 											fill
 											className="rounded-full object-cover"
 											sizes="40px"
@@ -79,7 +79,9 @@ export default function Home() {
 									</div>
 
 									<div>
-										<p className="font-medium">{pet.nome}</p>
+										<p className="font-medium">
+											{pet.nome}
+										</p>
 										<p className="text-sm text-gray-500">
 											{moment().diff(
 												pet.nascimento,

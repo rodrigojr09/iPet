@@ -18,12 +18,20 @@ export default function AuthProvider({ children }: any) {
 	useEffect(() => {
 		if (status === "authenticated") {
 			(async () => {
-				const res = await axios.get(
-					`/api/user/${data.user.id}?profiles=true`
-				);
-				setAccount(res.data);
-				setProfile(res.data.profiles[0]);
-				setLoading(false);
+				try {
+					const res = await axios.get(
+						`/api/user/${data.user.id}?profiles=true`
+					);
+					setAccount(res.data);
+					setProfile(res.data.profiles[0]);
+					setLoading(false);
+				} catch (err: any) {
+					if (err.response.status === 404) {
+						await signOut().then(() => {
+							setLoading(false);
+						});
+					}
+				}
 			})();
 		} else if (status === "unauthenticated") {
 			setLoading(false);
@@ -56,9 +64,15 @@ export default function AuthProvider({ children }: any) {
 				{children}
 			</AuthContext.Provider>
 		);
-    return <div className="w-screen h-screen items-center flex justify-center">
-        <BoneIcon width={100} height={100}  className="animate-spin duration-1000" />
-    </div>;
+	return (
+		<div className="w-screen h-screen items-center flex justify-center">
+			<BoneIcon
+				width={100}
+				height={100}
+				className="animate-spin duration-1000"
+			/>
+		</div>
+	);
 }
 
 export function useAuth() {
