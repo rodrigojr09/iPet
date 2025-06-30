@@ -18,17 +18,18 @@ model Account {
 }
 
 model Profile {
-    id         String    @id @default(uuid()) @map("_id")
-    tag        String    @unique
-    nome       String
-    nascimento String
-    foto       String
-    bio        String
-    raca       String
-    followers  String[] // lista de IDs de contas que seguem este usuário
-    following  String[] // lista de IDs de contas que este usuário segue
-    comments   Comment[] @relation("AuthorComments")
-    posts      Post[]    @relation("UserPosts")
+    id            String         @id @default(uuid()) @map("_id")
+    tag           String         @unique
+    nome          String
+    nascimento    String
+    foto          String
+    bio           String
+    raca          String
+    followers     String[] // lista de IDs de contas que seguem este usuário
+    following     String[] // lista de IDs de contas que este usuário segue
+    comments      Comment[]      @relation("AuthorComments")
+    posts         Post[]         @relation("UserPosts")
+    notifications Notification[]
 
     account_id String
     account    Account @relation("UserPets", fields: [account_id], references: [id])
@@ -63,6 +64,7 @@ type Notification {
     type      NotificationType
     data      Json?
     message   String
+    visto     Boolean          @default(false)
     createdAt DateTime         @default(now())
 }
 

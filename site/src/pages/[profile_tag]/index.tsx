@@ -1,41 +1,77 @@
+import { useAuth } from "@/hooks/useAuth";
+import { useError } from "@/hooks/useError";
 import { Prisma } from "@prisma/client";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function ProfilePage() {
 	const router = useRouter();
-	const [profile, setProfile] =
-		useState<
-			Prisma.ProfileGetPayload<{
-				include: {
-					posts: { include: { author: true; comments: true } };
-				};
-			}>
-		>();
+	const { profile: myprofile } = useAuth();
+	const error = useError();
+	const [loadFollow, setFollowStatus] = useState(true);
+	const [profile, setProfile] = useState<
+		Prisma.ProfileGetPayload<{
+			include: {
+				posts: { include: { author: true; comments: true } };
+			};
+		}>
+	>();
 
-	useEffect(() => {
-		if (!router.query.profile_tag) return;
+	const refresh = useCallback(
+		async function () {
+			if (!router.query.profile_tag) return;
 
-		(async () => {
 			try {
 				const res = await axios.get(
 					`/api/profile/tag/${router.query.profile_tag}?posts=true`
 				);
 				if (res.status === 200) {
 					setProfile(res.data);
+					setFollowStatus(false);
 				}
 			} catch (err) {
 				console.error("Erro ao carregar perfil", err);
 			}
-		})();
-	}, [router.query.profile_tag]);
+		},
+		[router.query.profile_tag]
+	);
+
+	async function follow() {
+		if (!profile || !myprofile) return;
+		const res = await axios.post(
+			`/api/profile/${profile.id}/follow?profile_id=${myprofile.id}`
+		);
+		if (res.status === 200) {
+			refresh();
+		} else {
+			error.throwError("Erro ao seguir perfil");
+			console.log(res.statusText);
+		}
+	}
+
+	async function unfollow() {
+		if (!profile || !myprofile) return;
+		const res = await axios.post(
+			`/api/profile/${profile.id}/unfollow?profile_id=${myprofile.id}`
+		);
+		if (res.status === 200) {
+			refresh();
+		} else {
+			error.throwError("Erro ao deixar de seguir perfil");
+			console.log(res.statusText);
+		}
+	}
+
+	useEffect(() => {
+		refresh();
+	}, [refresh]);
 
 	if (!profile) return null;
 
 	return (
-		<div className="max-w-5xl mx-auto px-4 py-10">
+		<div className="max-w-5xl mx-auto px-4 md:py-10">
 			{/* Header */}
 			<div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row gap-8 items-center sm:items-start">
 				{/* Avatar */}
@@ -43,8 +79,10 @@ export default function ProfilePage() {
 					<Image
 						src={profile.foto}
 						alt="Foto de perfil"
-						fill
-						className="rounded-full object-cover border-4 border-blue-500"
+						width={140}
+						height={140}
+						className="rounded-full max-w-[120px] max-h-[120px] object-cover border-4 border-blue-500"
+						priority // opcional, para pré-carregar
 					/>
 				</div>
 
@@ -60,9 +98,49 @@ export default function ProfilePage() {
 							</p>
 						</div>
 
-						<button className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white py-2 px-5 rounded-full text-sm font-medium transition">
-							Editar Perfil
-						</button>
+						<div className="flex flex-col gap-4">
+							{profile.id === myprofile?.id && (
+								<button className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white py-2 px-5 rounded-full text-sm font-medium transition">
+									Editar Perfil
+								</button>
+							)}
+
+							<button
+								onClick={() => {
+									if (
+										profile.followers.includes(
+											myprofile?.id || ""
+										)
+									) {
+										setFollowStatus(true);
+										unfollow();
+                                    } else {
+                                        if (!myprofile) return router.push("/auth/login");
+										setFollowStatus(true);
+										follow();
+									}
+								}}
+								disabled={loadFollow}
+								className="mt-4 sm:mt-0 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-5 rounded-full text-sm font-medium transition"
+							>
+								{loadFollow && (
+									<span
+										className="inline-block w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"
+										aria-label="Carregando"
+									></span>
+								)}
+								{!loadFollow &&
+									(profile.followers.includes(
+										myprofile?.id || ""
+									)
+										? "Seguindo"
+										: "Seguir")}
+							</button>
+
+							<button className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white py-2 px-5 rounded-full text-sm font-medium transition">
+								Compartilhar
+							</button>
+						</div>
 					</div>
 
 					<p className="mt-4 text-gray-700 dark:text-gray-300 text-sm break-all">

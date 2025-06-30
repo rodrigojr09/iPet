@@ -75,7 +75,11 @@ export default function Navbar() {
 							>
 								🔔
 								<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none shadow">
-									0
+									{
+										profile.notifications.filter(
+											(n) => !n.visto
+										).length
+									}
 								</span>
 							</button>
 
@@ -85,8 +89,9 @@ export default function Navbar() {
 									<Image
 										alt="avatar-pet"
 										src={profile.foto}
-										fill
-										className="rounded-full object-cover border border-green-500"
+                                        fill
+                                        priority
+										className="rounded-full max-w-[32] max-h-[32] object-cover border border-green-500"
 									/>
 								</div>
 							)}
