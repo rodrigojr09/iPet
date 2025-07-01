@@ -13,10 +13,8 @@ export default function LoginForm() {
 				<title>iPet - Conecte seu pet com a nossa comunidade!</title>
 			</Head>
 
-			{/* Estrutura principal */}
-			<div className="w-screen h-screen bg-blue-100 flex items-center justify-center overflow-hidden text-xs">
-				<div className="relative w-[400px] h-[490px] rounded-md overflow-hidden bg-gradient-to-tr from-yellow-500 to-yellow-300">
-					{/* ✂️ Structuras complexas com CSS puro → ver seção “Estilos a parte” */}
+			<div className="w-screen h-screen bg-blue-100 flex items-center justify-center text-xs">
+				<div className="relative w-full h-full sm:w-[400px] sm:h-[490px] sm:rounded-md overflow-hidden bg-gradient-to-tr from-yellow-500 to-yellow-300">
 					<div className="ear ear--left"></div>
 					<div className="ear ear--right"></div>
 					<div className="face">
@@ -91,8 +89,7 @@ export default function LoginForm() {
 						</div>
 					</div>
 
-					{/* Form inputs com Tailwind */}
-					<div className="flex flex-col mt-3 px-5">
+					<div className="flex flex-col mt-5 px-6 sm:px-10">
 						<EmailInput
 							value={email}
 							onChange={(e: any) => setEmail(e.target.value)}
@@ -112,7 +109,7 @@ export default function LoginForm() {
 									callbackUrl: "/",
 								})
 							}
-							className="w-full mt-5 h-[35px] bg-slate-800 text-white rounded-full active:scale-95 transition"
+							className="w-full mt-5 h-12 text-sm bg-slate-800 text-white rounded-full active:scale-95 transition"
 						>
 							Login
 						</button>
@@ -127,7 +124,7 @@ function EmailInput({ value, onChange, onFocus, onBlur }: any) {
 	return (
 		<label className="relative block">
 			<input
-				className="w-full h-[35px] rounded-full px-4 text-sm placeholder-gray-400 bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
+				className="w-full h-12 rounded-full px-4 text-sm sm:text-base placeholder-gray-400 bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
 				type="text"
 				placeholder="email"
 				value={value}
@@ -143,9 +140,9 @@ function PasswordInput({ value, onChange, onFocus, onBlur }: any) {
 	const [showPassword, setShowPassword] = useState(false);
 
 	return (
-		<label className="relative block mt-2">
+		<label className="relative block mt-3">
 			<input
-				className="w-full h-[35px] rounded-full px-4 text-sm placeholder-gray-400 bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
+				className="w-full h-12 rounded-full px-4 text-sm sm:text-base placeholder-gray-400 bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
 				type={showPassword ? "text" : "password"}
 				placeholder="password"
 				value={value}
@@ -156,7 +153,7 @@ function PasswordInput({ value, onChange, onFocus, onBlur }: any) {
 			<button
 				type="button"
 				onClick={() => setShowPassword(!showPassword)}
-				className="absolute top-[4px] right-[20px] w-[30px] h-[27px] flex items-center justify-center rounded-full bg-slate-800 text-white hover:bg-slate-700 transition"
+				className="absolute top-[10px] right-[20px] w-[30px] h-[30px] flex items-center justify-center rounded-full bg-slate-800 text-white hover:bg-slate-700 transition"
 			>
 				{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
 			</button>

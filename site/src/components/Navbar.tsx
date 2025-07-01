@@ -89,8 +89,8 @@ export default function Navbar() {
 									<Image
 										alt="avatar-pet"
 										src={profile.foto}
-                                        fill
-                                        priority
+										fill
+										priority
 										className="rounded-full max-w-[32] max-h-[32] object-cover border border-green-500"
 									/>
 								</div>
@@ -166,13 +166,15 @@ export default function Navbar() {
 						>
 							🏥 Clínicas
 						</Link>
-						<Link
-							href={profile ? "/mypet" : "#"}
-							onClick={toggleMenu}
-							className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-						>
-							🐶 {profile ? "Meu Pet" : "Perfil"}
-						</Link>
+						{profile && (
+							<Link
+								href={"/mypet"}
+								onClick={toggleMenu}
+								className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+							>
+								🐶 Meu Pet
+							</Link>
+						)}
 					</nav>
 
 					<hr className="border-gray-200 dark:border-gray-700 my-2" />
