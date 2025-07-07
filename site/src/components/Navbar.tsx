@@ -1,16 +1,31 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { Menu, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { Profile } from "@prisma/client";
+import useDebounce from "@/hooks/useDebounce";
+import moment from "moment-timezone";
 
 export default function Navbar() {
 	const { profile, logout } = useAuth();
+	const [profiles, setProfiles] = useState<Profile[]>([]);
 	const [search, setSearch] = useState("");
 	const [isOpen, setIsOpen] = useState(false);
-	const [profiles, setProfiles] = useState<Profile[]>([]);
+
+	const inputRef = useRef<HTMLInputElement>(null);
+	const debouncedSearch = useDebounce(search, 300); // debounce de 300ms
+	const [showResults, setShowResults] = useState(false);
+
+	const [showNotifications, setShowNotifications] = useState(false);
+	const notificationRef = useRef<HTMLDivElement>(null);
+
+	const filterProfiles = profiles.filter((p) =>
+		p.nome.toLowerCase().includes(debouncedSearch.toLowerCase())
+	);
+
+	const toggleMenu = () => setIsOpen(!isOpen);
 
 	useEffect(() => {
 		fetch("/api/profile")
@@ -18,11 +33,35 @@ export default function Navbar() {
 			.then((data) => setProfiles(data));
 	}, []);
 
-	const toggleMenu = () => setIsOpen(!isOpen);
+	// Fecha o dropdown ao clicar fora
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				inputRef.current &&
+				!inputRef.current.contains(event.target as Node)
+			) {
+				setShowResults(false);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () =>
+			document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
 
-	const filterProfiles = profiles.filter((profile) => {
-		return profile.nome.toLowerCase().includes(search.toLowerCase());
-	});
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				notificationRef.current &&
+				!notificationRef.current.contains(event.target as Node)
+			) {
+                setShowNotifications(false);
+			}
+		};
+        console.log(profile?.notifications)
+		document.addEventListener("mousedown", handleClickOutside);
+		return () =>
+			document.removeEventListener("mousedown", handleClickOutside);
+	}, [profile?.notifications]);
 
 	return (
 		<header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
@@ -69,32 +108,109 @@ export default function Navbar() {
 					{profile ? (
 						<>
 							{/* Notificações */}
-							<button
-								className="relative text-xl hover:scale-110 transition-transform"
-								aria-label="Notificações"
-							>
-								🔔
-								<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none shadow">
-									{
-										profile.notifications.filter(
-											(n) => !n.visto
-										).length
+							<div className="relative" ref={notificationRef}>
+								<button
+									className="relative text-xl hover:scale-110 transition-transform"
+									onClick={() =>
+										setShowNotifications((prev) => !prev)
 									}
-								</span>
-							</button>
+									aria-label="Notificações"
+								>
+									🔔
+									{profile.notifications.some(
+										(n) => !n.visto
+									) && (
+										<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none shadow">
+											{
+												profile.notifications.filter(
+													(n) => !n.visto
+												).length
+											}
+										</span>
+									)}
+								</button>
+
+								{/* Card flutuante de notificações */}
+								{showNotifications && (
+									<div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50">
+										<div className="p-4 border-b border-gray-200 dark:border-gray-700 font-semibold text-gray-800 dark:text-gray-100">
+											Notificações
+										</div>
+										<ul className="max-h-60 overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
+											{profile.notifications.length >
+											0 ? (
+												profile.notifications
+                                                    .filter((n) => !n.visto)
+                                                    .map((n) => {
+                                                        const profileInfo = profiles.find(
+                                                            (p) => p.id === (n.data as any)?.profile_id
+                                                        );
+                                            
+                                                        return (
+															<li
+																key={n.id}
+																className="flex items-center gap-3 px-4 py-3 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+															>
+																<Image
+																	src={
+																		profileInfo?.foto ||
+																		"/default-avatar.jpeg"
+																	}
+																	alt={
+																		profileInfo?.nome ||
+																		"Avatar"
+																	}
+																	width={32}
+																	height={32}
+																	className="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-600"
+																/>
+																<div className="flex flex-col">
+																	<span className={"flex-1 "+(!n.visto ? "font-semibold text-blue-400" : "")}>
+																		{
+																			n.message
+																		}
+																	</span>
+																	<span className="text-xs text-gray-500 dark:text-gray-400">
+																		{moment(
+																			n.createdAt
+																		).fromNow()}
+																	</span>
+																</div>
+															</li>
+														);
+                                                    })
+											) : (
+												<li className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 italic">
+													Sem novas notificações
+												</li>
+											)}
+										</ul>
+										<div className="p-3 border-t border-gray-200 dark:border-gray-700 text-right">
+											<button
+												className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+												onClick={() => {
+													// Chame aqui a função que marca como lidas (você deve criar isso no backend)
+													setShowNotifications(false);
+												}}
+											>
+												Marcar todas como lidas
+											</button>
+										</div>
+									</div>
+								)}
+							</div>
 
 							{/* Avatar */}
-							{profile.foto && (
-								<div className="w-[32] h-[32] relative">
-									<Image
-										alt="avatar-pet"
-										src={profile.foto}
-										fill
-										priority
-										className="rounded-full max-w-[32] max-h-[32] object-cover border border-green-500"
-									/>
-								</div>
-							)}
+
+							<div className="w-[32] h-[32] relative">
+								<Image
+									alt="avatar-pet"
+									src={profile.foto || "/default-avatar.jpeg"}
+									fill
+									priority
+									className="rounded-full max-w-[32] max-h-[32] object-cover border border-green-500"
+								/>
+							</div>
 
 							<button
 								className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm"
@@ -213,32 +329,53 @@ export default function Navbar() {
 				</div>
 			)}
 			{/* Barra de Pesquisa */}
-			<div className="hidden w-full md:flex justify-center p-4 relative">
-				<div className="flex items-center w-full max-w-md relative">
-					<input
-						type="text"
-						placeholder="Buscar"
-						onChange={(e) => setSearch(e.target.value)}
-						className="flex-grow py-2 px-4 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-					/>
-					<button className="ml-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-full text-sm font-semibold transition-colors">
-						Buscar
-					</button>
+			<div className="hidden w-full md:flex justify-center p-4 relative z-40">
+				<div
+					className="flex flex-col w-full max-w-md relative"
+					ref={inputRef}
+				>
+					<div className="flex items-center w-full relative">
+						<Search className="absolute left-3 text-gray-400 dark:text-gray-500 w-4 h-4" />
+						<input
+							type="text"
+							placeholder="Buscar pets..."
+							value={search}
+							onChange={(e) => {
+								setSearch(e.target.value);
+								setShowResults(true);
+							}}
+							onFocus={() => setShowResults(true)}
+							className="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						/>
+					</div>
 
-					{/* Dropdown de resultados */}
-					{filterProfiles.length > 0 && search !== "" && (
-						<div className="absolute max-h-64 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 mt-2">
+					{showResults && filterProfiles.length > 0 && (
+						<div className="absolute top-12 left-0 w-full max-h-64 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg">
 							<ul className="divide-y divide-gray-200 dark:divide-gray-700">
 								{filterProfiles.map((result) => (
-									<li
-										key={result.id}
-										className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-800 dark:text-gray-100"
-										onClick={() => {
-											setSearch(result.nome);
-											// Adicione a ação desejada ao clicar no resultado
-										}}
-									>
-										{result.nome}
+									<li key={result.id}>
+										<Link
+											href={`/${result.tag}`}
+											className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-gray-800 dark:text-gray-100 transition-colors"
+											onClick={() => {
+												setShowResults(false);
+												setSearch("");
+											}}
+										>
+											<Image
+												src={
+													result.foto ||
+													"/default-avatar.jpeg"
+												}
+												alt={result.nome}
+												width={32}
+												height={32}
+												className="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-600 shadow-sm"
+											/>
+											<span className="truncate">
+												{result.nome}
+											</span>
+										</Link>
 									</li>
 								))}
 							</ul>

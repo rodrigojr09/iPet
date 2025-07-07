@@ -1,8 +1,11 @@
 import FormAccount from "@/components/auth/Register/FormAccount";
+import FormProfile from "@/components/auth/Register/FormProfile";
 import { useError } from "@/hooks/useError";
 import axios from "axios";
+import { ChevronLeft } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useState, useCallback } from "react";
 
 export interface AccountProps {
@@ -20,9 +23,11 @@ export interface ProfileProps {
 
 export default function SignUp() {
 	const [step, setStep] = useState(1);
+	const router = useRouter();
 	const error = useError();
 	const [loading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
+	const [agree, setAgree] = useState(false);
 
 	const [account, setAccount] = useState<AccountProps>({
 		email: "",
@@ -80,8 +85,8 @@ export default function SignUp() {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-        if (step === 1) return handleNextStep();
-        
+		if (step === 1) return handleNextStep();
+
 		if (
 			!profile.nome.trim() ||
 			!profile.nascimento ||
@@ -138,24 +143,105 @@ export default function SignUp() {
 				</div>
 
 				{/* Right side: form content */}
-				<section className="flex flex-col flex-1 bg-gray-50 px-6 py-[14vh] xl:py-[10vh]">
+				<form
+					onSubmit={handleSubmit}
+					className="flex flex-col flex-1 bg-gray-50 px-6 py-[14vh] xl:py-[10vh] relative"
+				>
 					<header className="mb-12 text-center">
 						<h1 className="text-4xl font-extrabold text-[#5c6ccd] mb-4">
-							Cadastre-se
+							{step === 1 && "Cadastre-se"}
+							{step === 2 && "Adicione seu Pet"}
 						</h1>
 						<p className="text-xl text-[#5753b5cc]">
 							Bem-vindo, venha fazer parte do nosso mundo pet.
 						</p>
+						{step === 2 && (
+							<button
+								onClick={() => setStep(1)}
+								className="absolute top-4 left-4 text-[#5753b5cc] hover:text-[#5c6ccd]"
+							>
+								<ChevronLeft size={50} />
+							</button>
+						)}
 					</header>
 
 					{step === 1 && (
 						<FormAccount
 							account={account}
 							handleChangeAccount={handleChangeAccount}
-							handleSubmit={handleSubmit}
 						/>
 					)}
-				</section>
+					{step === 2 && (
+						<FormProfile
+							profile={profile}
+							handleChangeProfile={handleChangeProfile}
+							handleFile={handleFile}
+						/>
+					)}
+					{/* Checkbox */}
+					<div className="max-w-md mx-auto w-full mb-10 flex items-center">
+						<input
+							id="agree"
+							type="checkbox"
+							required
+							checked={agree}
+							onChange={(e) => setAgree(e.target.checked)}
+							className="w-5 h-5 text-[#5c6ccd] border-2 border-gray-400 rounded focus:ring-2 focus:ring-[#5c6ccd] cursor-pointer"
+						/>
+						<label
+							htmlFor="agree"
+							className="ml-4 text-[#5753b5cc] cursor-pointer text-lg select-none"
+						>
+							Eu concordo com os termos e condições
+						</label>
+					</div>
+
+					{/* Button */}
+					<div className="text-center">
+						<button
+							id="sign-up-button"
+							type="submit"
+							disabled={
+								(step === 1 &&
+									(!account.email ||
+										!account.senha ||
+										!account.confirmarSenha ||
+										!agree)) ||
+								(step === 2 &&
+									(!profile.foto ||
+										!profile.tag ||
+										!profile.raca ||
+										!profile.nascimento ||
+										!profile.nome)) ||
+								!agree
+							}
+							className="inline-block px-14 py-4 text-lg font-bold text-white rounded bg-[#5c6ccd] disabled:opacity-70 disabled:cursor-not-allowed hover:bg-[#767fd1] focus:bg-[#4a4a8b] focus:outline-none transition duration-200 ease-in-out"
+						>
+							{loading && "Cadastrando..."}
+							{success && "Cadastrado com sucesso!"}
+							{!loading &&
+								!success &&
+								(step === 1
+									? "Proximo"
+									: step === 2 && "Cadastrar")}
+						</button>
+					</div>
+
+					{/* Sign in link */}
+					<div className="mt-8 mb-5 text-center text-[#5c6ccd] underline cursor-pointer">
+						Já possui uma conta?&nbsp;
+						<a href="#" className="hover:text-[#3e3c6f]">
+							Login
+						</a>
+					</div>
+
+					{/* Terms link */}
+					<div className="mb-20 text-center text-[#5c6ccd] underline cursor-pointer">
+						<a href="#" className="hover:text-[#3e3c6f]">
+							Termos de uso. Politica de privacidade
+						</a>
+					</div>
+				</form>
 			</div>
 		</main>
 	);

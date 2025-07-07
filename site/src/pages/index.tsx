@@ -5,20 +5,19 @@ import moment from "moment-timezone";
 import Feed from "@/components/Feed";
 import PostNew from "@/components/PostNew";
 import { useState } from "react";
-
 export default function Home() {
 	const { account, profile } = useAuth();
 	const [postField, setPostField] = useState<boolean>(false);
 
 	return (
-		<main className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-			{/*<!-- Feed -->*/}
-			<section className="lg:col-span-2 flex flex-col gap-6">
+		<main className="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto py-6 px-4">
+			{/* Feed Principal */}
+			<section className="w-full md:flex-1 flex flex-col space-y-6">
 				{postField ? (
 					<PostNew handleClose={() => setPostField(false)} />
 				) : (
 					<button
-						className="bg-blue-600 text-white px-4 py-1 mx-auto w-1/2 rounded hover:bg-blue-700"
+						className="bg-blue-600 text-white px-4 py-2 w-full sm:w-1/2 md:w-1/3 mx-auto rounded-md hover:bg-blue-700 shadow text-sm"
 						onClick={() => setPostField(true)}
 					>
 						Nova Postagem
@@ -28,67 +27,82 @@ export default function Home() {
 				<Feed />
 			</section>
 
-			{/*<!-- Sidebar -->*/}
-			<aside className="space-y-6">
-				{/*<!-- Marketplace -->*/}
-				<div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-					<h3 className="font-semibold mb-2">Marketplace 🛍️</h3>
-					<p>Confira os melhores produtos para seu pet!</p>
-					<button className="mt-2 text-blue-600 hover:underline">
+			{/* Sidebar Direita */}
+			<aside className="hidden md:block w-full md:w-[280px] space-y-6">
+				{/* Marketplace */}
+				<div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+					<h3 className="font-semibold text-lg mb-2">
+						Marketplace 🛍️
+					</h3>
+					<p className="text-sm text-gray-600 dark:text-gray-300">
+						Confira os melhores produtos para seu pet!
+					</p>
+					<button className="mt-3 text-blue-600 hover:underline text-sm">
 						Ver mais
 					</button>
 				</div>
 
-				{/*<!-- Clínicas -->*/}
-				<div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-					<h3 className="font-semibold mb-2">
+				{/* Clínicas */}
+				<div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+					<h3 className="font-semibold text-lg mb-2">
 						Clínicas Veterinárias 🏥
 					</h3>
-					<ul className="space-y-1 text-sm">
-						<li>
-							🐾 PetCare – ⭐ 4.8
-							<button className="ml-2 text-blue-500 hover:underline">
+					<ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+						<li className="flex justify-between items-center">
+							<span>🐾 PetCare – ⭐ 4.8</span>
+							<button className="text-blue-500 hover:underline">
 								Agendar
 							</button>
 						</li>
-						<li>
-							🐾 Vet Amigo – ⭐ 4.6
-							<button className="ml-2 text-blue-500 hover:underline">
+						<li className="flex justify-between items-center">
+							<span>🐾 Vet Amigo – ⭐ 4.6</span>
+							<button className="text-blue-500 hover:underline">
 								Agendar
 							</button>
 						</li>
 					</ul>
 				</div>
 
-				{/*<!-- Meus Pet -->*/}
+				{/* Meus Pets */}
 				{account && (
-					<div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-						<h3 className="font-semibold mb-2">Meus Pet 🐾</h3>
-						{account.profiles.map((pet) => (
-							<div
-								key={pet.id}
-								className="flex items-center gap-2"
-							>
-								<div className="w-10 h-10 relative">
-									<Image
-										alt="avatar-pet"
-										src={pet.foto}
-										fill
-										className="rounded-full object-cover"
-										sizes="40px"
-									/>
+					<div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+						<h3 className="font-semibold text-lg mb-2">
+							Meus Pets 🐾
+						</h3>
+						<div className="space-y-4">
+							{account.profiles.map((pet) => (
+								<div
+									key={pet.id}
+									className="flex items-center gap-3"
+								>
+									<div className="w-10 h-10 relative">
+										<Image
+											alt="avatar-pet"
+											src={
+												pet.foto ||
+												"/default-avatar.jpeg"
+											}
+											fill
+											className="rounded-full object-cover"
+											sizes="40px"
+										/>
+									</div>
+									<div>
+										<p className="font-medium text-gray-800 dark:text-white">
+											{pet.nome}
+										</p>
+										<p className="text-sm text-gray-500">
+											{moment().diff(
+												pet.nascimento,
+												"years"
+											)}{" "}
+											anos
+										</p>
+									</div>
 								</div>
-
-								<div>
-									<p className="font-medium">{pet.nome}</p>
-									<p className="text-sm text-gray-500">
-										{moment().diff(pet.nascimento, "years")}{" "}
-										anos
-									</p>
-								</div>
-							</div>
-						))}
-						<button className="mt-2 text-blue-600 hover:underline">
+							))}
+						</div>
+						<button className="mt-4 text-blue-600 hover:underline text-sm">
 							Adicionar Pet
 						</button>
 					</div>

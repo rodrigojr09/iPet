@@ -77,7 +77,7 @@ export default function ProfilePage() {
 				{/* Avatar */}
 				<div className="relative w-[120px] h-[120px] sm:w-[140px] sm:h-[140px]">
 					<Image
-						src={profile.foto}
+						src={profile.foto || "/default-avatar.jpeg"}
 						alt="Foto de perfil"
 						width={140}
 						height={140}
