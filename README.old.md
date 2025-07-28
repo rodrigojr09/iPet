@@ -63,30 +63,6 @@
 
 ---
 
-## 📂 Estrutura do Projeto
-
-/iPet Site
-
--   Inicio
-    -   Mural Animal de mídias com Auventuras e PetMovs
--   MiauChat
-    -   Conversa de Pais de Pets
-    -   ZooSocial
-    -   AuNegócios
--   Marketplace
-    -   PetShop
-    -   Habitat's (Apartamento Pet)
-    -   Veterinarios
-    -   Avaliação de lojas e veterinarios por "estrela" (Icone: Pata de Coelho) e por comentario
--   Perfil Pet
-    -   Ficha Animal
-    -   Muudalhas
--   FAQ Pet
-    -   MiAujuda (Duvidas Frequentes)
-    -   Ajuda Pet Publica
-
----
-
 ## 📬 Contato
 
 -   **Nome**: Rodrigo, Murilo
