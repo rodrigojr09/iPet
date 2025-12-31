@@ -1,1 +1,3 @@
 # Não ignorar esta pasta
+
+/src/generated/prisma

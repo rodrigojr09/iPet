@@ -1,3 +1,6 @@
 /site/.next
 /site/node_modules
 /node_modules
+/servidor/node_modules
+/servidor/dist
+*.lock
