@@ -116,3 +116,52 @@ svg.smile {
 		transform: rotateX(60deg);
 	}
 }
+
+/* Cute decorations and animations */
+.animate-bob {
+	animation: bob 3s ease-in-out infinite;
+}
+.delay-200 {
+	animation-delay: 0.2s;
+}
+@keyframes bob {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-6px); }
+}
+.animate-fade {
+	animation: fadeIn 360ms ease both;
+}
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(6px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+.decor-paw {
+	width: 48px;
+	height: 48px;
+	pointer-events: none;
+}
+
+/* small responsive tweak */
+@media (max-width: 640px) {
+	.decor-paw { display: none; }
+}
+
+/* Wood plank header tweaks */
+.wood-plank {
+	position: relative;
+}
+.wood-title {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 800;
+	color: #fff;
+	text-shadow: 0 2px 0 rgba(0,0,0,0.12);
+}
+
+/* input/card finish like the reference */
+.rounded-xl { border-radius: 14px; }
+.shadow-card { box-shadow: 0 10px 18px rgba(0,0,0,0.06); }
+
