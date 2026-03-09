@@ -1,8 +1,8 @@
-import { Prisma } from "@prisma/client";
 import Image from "next/image";
+import { PostModel } from "@/types/models";
 
 interface PostProps {
-	post: Prisma.PostGetPayload<{ include: { author: true; comments: true } }>;
+	post: PostModel;
 }
 
 export default function Post({ post }: PostProps) {

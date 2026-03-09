@@ -4,13 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { Menu, Search, X } from "lucide-react";
-import { Profile } from "@prisma/client";
 import useDebounce from "@/hooks/useDebounce";
 import moment from "moment-timezone";
+import { Notification, ProfileModel } from "@/types/models";
 
 export default function Navbar() {
 	const { profile, logout } = useAuth();
-	const [profiles, setProfiles] = useState<Profile[]>([]);
+	const [profiles, setProfiles] = useState<ProfileModel[]>([]);
 	const [search, setSearch] = useState("");
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -57,7 +57,6 @@ export default function Navbar() {
                 setShowNotifications(false);
 			}
 		};
-        console.log(profile?.notifications)
 		document.addEventListener("mousedown", handleClickOutside);
 		return () =>
 			document.removeEventListener("mousedown", handleClickOutside);
@@ -117,13 +116,11 @@ export default function Navbar() {
 									aria-label="Notificações"
 								>
 									🔔
-									{profile.notifications.some(
-										(n) => !n.visto
-									) && (
+									{profile.notifications.some((n: Notification) => !n.visto) && (
 										<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none shadow">
 											{
 												profile.notifications.filter(
-													(n) => !n.visto
+													(n: Notification) => !n.visto
 												).length
 											}
 										</span>
@@ -140,10 +137,10 @@ export default function Navbar() {
 											{profile.notifications.length >
 											0 ? (
 												profile.notifications
-                                                    .filter((n) => !n.visto)
-                                                    .map((n) => {
+                                                    .filter((n: Notification) => !n.visto)
+                                                    .map((n: Notification) => {
                                                         const profileInfo = profiles.find(
-                                                            (p) => p.id === (n.data as any)?.profile_id
+                                                            (p) => p.id === (n.data as { profile_id?: string })?.profile_id
                                                         );
                                             
                                                         return (

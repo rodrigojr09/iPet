@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { AuthProps } from "../../types/AuthProvider";
 import axios from "axios";
-import { Account, Profile } from "@prisma/client";
 import { useRouter } from "next/router";
 import { BoneIcon } from "lucide-react";
 
@@ -23,13 +22,15 @@ export default function AuthProvider({ children }: any) {
 						`/api/user/${data.user.id}?profiles=true`
 					);
 					setAccount(res.data);
-					setProfile(res.data.profiles[0]);
+					setProfile(res.data.profiles?.[0]);
 					setLoading(false);
 				} catch (err: any) {
-					if (err.response.status === 404) {
+					if (err.response?.status === 404) {
 						await signOut().then(() => {
 							setLoading(false);
 						});
+					} else {
+						setLoading(false);
 					}
 				}
 			})();
@@ -50,7 +51,11 @@ export default function AuthProvider({ children }: any) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.asPath]);
 
-	function enter(profile_id: string) {}
+	function enter(profile_id: string) {
+		const selectedProfile =
+			account?.profiles.find((item) => item.id === profile_id) || profile;
+		setProfile(selectedProfile);
+	}
 
 	function logout() {
 		signOut();

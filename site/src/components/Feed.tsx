@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import Post from "./Post";
-import { Prisma } from "@prisma/client";
 import moment from "moment-timezone";
+import { PostModel } from "@/types/models";
 
 export default function Feed() {
-	const [posts, setPosts] = useState<
-		Prisma.PostGetPayload<{ include: { author: true; comments: true } }>[]
-	>([]);
+	const [posts, setPosts] = useState<PostModel[]>([]);
 
 	useEffect(() => {
 		fetch("/api/post?author=true")
