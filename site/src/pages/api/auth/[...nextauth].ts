@@ -25,8 +25,12 @@ export const authOptions = {
 				);
 				if (!isValidPassword) return null;
 
-				const { senha, ...userWithoutPassword } = user;
-				return userWithoutPassword;
+				return {
+					id: user.id,
+					name: user.email,
+					email: user.email,
+					role: user.role,
+				};
 			},
 		}),
 	],
