@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -13,6 +13,12 @@ export default function PostNew({ handleClose }: { handleClose: () => void }) {
 	});
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+	useEffect(() => {
+		return () => {
+			if (previewUrl) URL.revokeObjectURL(previewUrl);
+		};
+	}, [previewUrl]);
+
 	const handleChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 			const { name, value } = e.target;
@@ -21,24 +27,35 @@ export default function PostNew({ handleClose }: { handleClose: () => void }) {
 		[]
 	);
 
-	const handleFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		const { files } = e.target;
-		if (files && files[0]) {
-			const file = files[0];
-			setPost((prev) => ({ ...prev, foto: file }));
-			setPreviewUrl(URL.createObjectURL(file));
-		}
-	}, []);
+	const handleFile = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const { files } = e.target;
+			if (files?.[0]) {
+				if (previewUrl) URL.revokeObjectURL(previewUrl);
+				setPost((prev) => ({ ...prev, foto: files[0] }));
+				setPreviewUrl(URL.createObjectURL(files[0]));
+			}
+		},
+		[previewUrl]
+	);
 
 	const handleSubmit = useCallback(() => {
-		(async () => {
+		void (async () => {
 			try {
+				if (!profile?.id) {
+					alert("Voce precisa estar logado para postar.");
+					return;
+				}
+
 				const formData = new FormData();
 				formData.append("titulo", post.titulo);
 				formData.append("legenda", post.legenda);
-				formData.append("authorId", profile?.id as string);
-                formData.append("foto", post.foto as any); // blob ou file
-                
+				formData.append("authorId", profile.id);
+
+				if (post.foto) {
+					formData.append("foto", post.foto);
+				}
+
 				const res = await fetch("/api/post/new", {
 					method: "POST",
 					body: formData,
@@ -47,10 +64,8 @@ export default function PostNew({ handleClose }: { handleClose: () => void }) {
 				if (res.ok) {
 					handleClose();
 					location.reload();
-				} else {
-					if (data.error) {
-						alert(data.error);
-					}
+				} else if (data.error) {
+					alert(data.error);
 				}
 			} catch (error) {
 				console.error(error);
@@ -64,17 +79,15 @@ export default function PostNew({ handleClose }: { handleClose: () => void }) {
 				Criar novo post
 			</h3>
 
-			{/* Título */}
 			<input
 				type="text"
 				name="titulo"
 				value={post.titulo}
 				onChange={handleChange}
-				placeholder="Título do post"
+				placeholder="Titulo do post"
 				className="w-full py-2 px-4 rounded-full text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
 			/>
 
-			{/* Legenda */}
 			<textarea
 				name="legenda"
 				value={post.legenda}
@@ -84,7 +97,6 @@ export default function PostNew({ handleClose }: { handleClose: () => void }) {
 				className="w-full py-2 px-4 rounded-lg text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
 			/>
 
-			{/* Upload de imagem */}
 			<div>
 				<input
 					type="file"
@@ -100,12 +112,11 @@ export default function PostNew({ handleClose }: { handleClose: () => void }) {
 					{post.foto ? "Alterar imagem" : "Adicionar imagem"}
 				</label>
 
-				{/* Preview da imagem */}
 				{previewUrl && (
 					<div className="mt-4 relative max-w-60 h-60 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
 						<Image
 							src={previewUrl}
-							alt="Prévia da imagem"
+							alt="Previa da imagem"
 							fill
 							className="object-cover"
 						/>
@@ -113,7 +124,6 @@ export default function PostNew({ handleClose }: { handleClose: () => void }) {
 				)}
 			</div>
 
-			{/* Botão de Postar */}
 			<div className="flex justify-between">
 				<button
 					onClick={handleSubmit}

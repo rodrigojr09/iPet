@@ -64,7 +64,7 @@ export default function AuthProvider({ children }: any) {
 	if (!loading)
 		return (
 			<AuthContext.Provider
-				value={{ account, profile, enter, logout, status: loading }}
+				value={{ account, profile, enter, logout, status: !loading }}
 			>
 				{children}
 			</AuthContext.Provider>
