@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import moment from "moment-timezone";
@@ -6,7 +5,7 @@ import Feed from "@/components/Feed";
 import PostNew from "@/components/PostNew";
 import { useState } from "react";
 export default function Home() {
-	const { account, profile } = useAuth();
+	const { account } = useAuth();
 	const [postField, setPostField] = useState<boolean>(false);
 
 	return (
@@ -70,37 +69,39 @@ export default function Home() {
 							Meus Pets 🐾
 						</h3>
 						<div className="space-y-4">
-							{account.profiles.map((pet) => (
-								<div
-									key={pet.id}
-									className="flex items-center gap-3"
-								>
-									<div className="w-10 h-10 relative">
-										<Image
-											alt="avatar-pet"
-											src={
-												pet.foto ||
-												"/default-avatar.jpeg"
-											}
-											fill
-											className="rounded-full object-cover"
-											sizes="40px"
-										/>
+							{account.profiles.map(
+								(pet: typeof account.profiles[number]) => (
+									<div
+										key={pet.id}
+										className="flex items-center gap-3"
+									>
+										<div className="w-10 h-10 relative">
+											<Image
+												alt="avatar-pet"
+												src={
+													pet.foto ||
+													"/default-avatar.jpeg"
+												}
+												fill
+												className="rounded-full object-cover"
+												sizes="40px"
+											/>
+										</div>
+										<div>
+											<p className="font-medium text-gray-800 dark:text-white">
+												{pet.nome}
+											</p>
+											<p className="text-sm text-gray-500">
+												{moment().diff(
+													pet.nascimento,
+													"years"
+												)}{" "}
+												anos
+											</p>
+										</div>
 									</div>
-									<div>
-										<p className="font-medium text-gray-800 dark:text-white">
-											{pet.nome}
-										</p>
-										<p className="text-sm text-gray-500">
-											{moment().diff(
-												pet.nascimento,
-												"years"
-											)}{" "}
-											anos
-										</p>
-									</div>
-								</div>
-							))}
+								)
+							)}
 						</div>
 						<button className="mt-4 text-blue-600 hover:underline text-sm">
 							Adicionar Pet

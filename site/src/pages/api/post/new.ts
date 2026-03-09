@@ -79,9 +79,6 @@ export default async function handler(
 					.status(500)
 					.json({ error: "Erro ao processar imagem" });
 			}
-		} else {
-			console.error("Erro ao processar imagem:", err);
-			return res.status(500).json({ error: "Erro ao processar imagem" });
 		}
 
 		try {

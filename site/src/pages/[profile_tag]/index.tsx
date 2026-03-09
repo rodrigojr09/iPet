@@ -1,23 +1,17 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useError } from "@/hooks/useError";
-import { Prisma } from "@prisma/client";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
+import { ProfileWithPosts } from "@/types/models";
 
 export default function ProfilePage() {
 	const router = useRouter();
 	const { profile: myprofile } = useAuth();
 	const error = useError();
 	const [loadFollow, setFollowStatus] = useState(true);
-	const [profile, setProfile] = useState<
-		Prisma.ProfileGetPayload<{
-			include: {
-				posts: { include: { author: true; comments: true } };
-			};
-		}>
-	>();
+	const [profile, setProfile] = useState<ProfileWithPosts>();
 
 	const refresh = useCallback(
 		async function () {
@@ -187,7 +181,7 @@ export default function ProfilePage() {
 					</p>
 				) : (
 					<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-						{profile.posts.map((post) => (
+						{profile.posts.map((post: ProfileWithPosts["posts"][number]) => (
 							<div
 								key={post.id}
 								className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow hover:shadow-md transition-shadow p-4 flex flex-col"

@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import prisma from "@/utils/prisma";
+import bcrypt from "bcryptjs";
 
 export const authOptions = {
 	providers: [
@@ -10,23 +12,18 @@ export const authOptions = {
 				password: { label: "Senha", type: "password" },
 			},
 			async authorize(credentials) {
-				console.log(credentials);
 				if (!credentials?.email || !credentials?.password) return null;
-
-				const res = await fetch(
-					`${process.env.NEXTAUTH_URL}/api/user/login`,
-					{
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({
-							email: credentials.email,
-							password: credentials.password,
-						}),
-					}
+				const user = await prisma.account.findUnique({
+					where: { email: credentials.email },
+				});
+				if (!user) return null;
+				const isValidPassword = await bcrypt.compare(
+					credentials.password,
+					user.senha
 				);
-
-				const user = await res.json();
-				if (res.ok && user) return user;
+				if (!isValidPassword) return null;
+				const { senha, ...userWithoutPassword } = user;
+				if (userWithoutPassword) return userWithoutPassword;
 				return null;
 			},
 		}),

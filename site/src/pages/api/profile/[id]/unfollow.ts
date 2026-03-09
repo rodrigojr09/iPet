@@ -1,5 +1,4 @@
 import prisma from "@/utils/prisma";
-import bcrypt from "bcryptjs";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handle(
@@ -19,33 +18,59 @@ export default async function handle(
 	}
 
 	try {
-		const profile = await prisma.profile.findUnique({
-			where: { id: id as string },
-		});
+		const [targetProfile, actorProfile] = await Promise.all([
+			prisma.profile.findUnique({
+				where: { id: id as string },
+			}),
+			prisma.profile.findUnique({
+				where: { id: profile_id as string },
+			}),
+		]);
 
-		if (!profile || !profile.followers.includes(profile_id as string)) {
+		if (!targetProfile || !actorProfile) {
 			return res.status(404).json({ error: "Profile not found" });
 		}
 
-		await prisma.profile.update({
-			where: { id: id as string },
-			data: {
-				followers: {
-					set: profile.followers.filter((f) => f !== profile_id),
+		if (!targetProfile.followers.includes(actorProfile.id)) {
+			return res.status(409).json({ error: "Profile is not followed" });
+		}
+
+		await Promise.all([
+			prisma.profile.update({
+				where: { id: targetProfile.id },
+				data: {
+					followers: {
+						set: targetProfile.followers.filter(
+							(followerId: string) =>
+								followerId !== actorProfile.id
+						),
+					},
+					notifications: {
+						set: targetProfile.notifications.filter(
+							(notification: (typeof targetProfile.notifications)[number]) =>
+								notification.type !== "follow" ||
+								(notification.data as { profile_id?: string })
+									?.profile_id !== actorProfile.id
+						),
+					},
 				},
-				notifications: {
-					set: profile.notifications.filter(
-						(n) =>
-							(n.data as any).profile_id !== profile_id &&
-							n.type === "follow"
-					),
+			}),
+			prisma.profile.update({
+				where: { id: actorProfile.id },
+				data: {
+					following: {
+						set: actorProfile.following.filter(
+							(followingId: string) =>
+								followingId !== targetProfile.id
+						),
+					},
 				},
-			},
-		});
+			}),
+		]);
 
 		return res
 			.status(200)
-			.json({ message: "Profile followed successfully" });
+			.json({ message: "Profile unfollowed successfully" });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ error: "Internal server error" });
