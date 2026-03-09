@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { Menu, Search, X } from "lucide-react";
+import { Bell, Menu, Search, X } from "lucide-react";
 import useDebounce from "@/hooks/useDebounce";
 import moment from "moment-timezone";
 import { Notification, ProfileModel } from "@/types/models";
@@ -87,7 +87,7 @@ export default function Navbar() {
 									}
 									aria-label="Notificacoes"
 								>
-									<span aria-hidden="true">o</span>
+									<Bell size={18} />
 									{profile.notifications.some(
 										(n: Notification) => !n.visto
 									) && (

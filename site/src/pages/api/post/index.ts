@@ -1,4 +1,5 @@
 import prisma from "@/utils/prisma";
+import { handleApiError } from "@/utils/apiError";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handle(
@@ -18,7 +19,6 @@ export default async function handle(
 		});
 		return res.status(200).json(posts);
 	} catch (err) {
-		console.log(err);
-		return res.status(500).json({ error: "Internal server error" });
+		return handleApiError(res, err);
 	}
 }

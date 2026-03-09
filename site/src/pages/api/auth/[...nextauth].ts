@@ -12,25 +12,30 @@ export const authOptions = {
 				password: { label: "Senha", type: "password" },
 			},
 			async authorize(credentials) {
-				if (!credentials?.email || !credentials?.password) return null;
+				try {
+					if (!credentials?.email || !credentials?.password) return null;
 
-				const user = await prisma.account.findUnique({
-					where: { email: credentials.email },
-				});
-				if (!user) return null;
+					const user = await prisma.account.findUnique({
+						where: { email: credentials.email },
+					});
+					if (!user) return null;
 
-				const isValidPassword = await bcrypt.compare(
-					credentials.password,
-					user.senha
-				);
-				if (!isValidPassword) return null;
+					const isValidPassword = await bcrypt.compare(
+						credentials.password,
+						user.senha
+					);
+					if (!isValidPassword) return null;
 
-				return {
-					id: user.id,
-					name: user.email,
-					email: user.email,
-					role: user.role,
-				};
+					return {
+						id: user.id,
+						name: user.email,
+						email: user.email,
+						role: user.role,
+					};
+				} catch (error) {
+					console.error("Authorize error:", error);
+					return null;
+				}
 			},
 		}),
 	],

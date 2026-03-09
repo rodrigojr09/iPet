@@ -1,34 +1,42 @@
-import { useState, useEffect } from "react";
+import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { signIn } from "next-auth/react";
 import axios from "axios";
 import { useError } from "@/hooks/useError";
-import { signIn } from "next-auth/react";
-import Head from "next/head";
-import {
-	Mail,
-	Lock,
-	Eye,
-	EyeOff,
-	User,
-	PawPrint,
-	Calendar,
-	Camera,
-} from "lucide-react";
 
-export default function Register() {
-	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
-	const [petName, setPetName] = useState("");
-	const [petBreed, setPetBreed] = useState("");
-	const [birthDate, setBirthDate] = useState("");
-	const [photo, setPhoto] = useState<File | null>(null);
-	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-	const [showPassword, setShowPassword] = useState(false);
-	const [loading, setLoading] = useState(false);
-	const [step, setStep] = useState<1 | 2>(1);
+type AccountForm = {
+	email: string;
+	senha: string;
+	confirmarSenha: string;
+};
 
+type ProfileForm = {
+	tag: string;
+	nome: string;
+	nascimento: string;
+	raca: string;
+	foto: File | null;
+};
+
+export default function RegisterPage() {
 	const error = useError();
+	const [step, setStep] = useState<1 | 2>(1);
+	const [loading, setLoading] = useState(false);
+	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+	const [account, setAccount] = useState<AccountForm>({
+		email: "",
+		senha: "",
+		confirmarSenha: "",
+	});
+	const [profile, setProfile] = useState<ProfileForm>({
+		tag: "",
+		nome: "",
+		nascimento: "",
+		raca: "",
+		foto: null,
+	});
 
 	useEffect(() => {
 		return () => {
@@ -36,441 +44,363 @@ export default function Register() {
 		};
 	}, [previewUrl]);
 
-	const nameValid = name.trim().length >= 3;
-	const emailValid = email.trim().length > 3 && email.includes("@");
-	const passwordValid = password.trim().length >= 6;
-	const confirmPasswordValid = confirmPassword === password && confirmPassword.length > 0;
+	const handleAccountChange = useCallback(
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			const { name, value } = event.target;
+			setAccount((prev) => ({ ...prev, [name]: value }));
+		},
+		[]
+	);
 
-	const petNameValid = petName.trim().length >= 2;
-	const petBreedValid = petBreed.trim().length >= 2;
-	const birthDateValid = !!birthDate;
+	const handleProfileChange = useCallback(
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			const { name, value } = event.target;
+			setProfile((prev) => ({ ...prev, [name]: value }));
+		},
+		[]
+	);
 
-	const validateStepOne = () => {
-		if (!nameValid) {
-			error.throwError("Digite seu nome.");
+	const handleFileChange = useCallback(
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			const file = event.target.files?.[0] || null;
+			if (previewUrl) URL.revokeObjectURL(previewUrl);
+			setProfile((prev) => ({ ...prev, foto: file }));
+			setPreviewUrl(file ? URL.createObjectURL(file) : null);
+		},
+		[previewUrl]
+	);
+
+	function validateAccountStep() {
+		if (!account.email.trim() || !account.senha || !account.confirmarSenha) {
+			error.throwError("Preencha todos os campos da conta.");
 			return false;
 		}
-		if (!emailValid) {
-			error.throwError("Digite um email válido.");
+
+		if (!account.email.includes("@")) {
+			error.throwError("Digite um email valido.");
 			return false;
 		}
-		if (!passwordValid) {
+
+		if (account.senha.length < 6) {
 			error.throwError("A senha deve ter ao menos 6 caracteres.");
 			return false;
 		}
-		if (!confirmPasswordValid) {
-			error.throwError("As senhas não conferem.");
-			return false;
-		}
-		return true;
-	};
 
-	const validate = () => {
-		if (!validateStepOne()) return false;
-
-		if (!petNameValid || !petBreedValid || !birthDateValid) {
-			error.throwError("Preencha os dados do pet.");
+		if (account.senha !== account.confirmarSenha) {
+			error.throwError("As senhas nao coincidem.");
 			return false;
 		}
 
 		return true;
-	};
+	}
 
-	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0] || null;
-		if (file) {
-			setPhoto(file);
-			if (previewUrl) URL.revokeObjectURL(previewUrl);
-			setPreviewUrl(URL.createObjectURL(file));
+	function validateProfileStep() {
+		if (
+			!profile.tag.trim() ||
+			!profile.nome.trim() ||
+			!profile.nascimento ||
+			!profile.raca.trim() ||
+			!profile.foto
+		) {
+			error.throwError("Preencha todos os campos do pet.");
+			return false;
 		}
-	};
 
-	const handleNextStep = () => {
-		if (!validateStepOne()) return;
-		setStep(2);
-	};
+		return true;
+	}
 
-	const handlePrevStep = () => {
-		setStep(1);
-	};
+	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+		event.preventDefault();
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!validate()) return;
+		if (!validateAccountStep() || !validateProfileStep()) {
+			return;
+		}
 
 		try {
 			setLoading(true);
 
 			const formData = new FormData();
-			formData.append("email", email);
-			formData.append("senha", password);
-			formData.append("nomeUsuario", name);
-			formData.append("nome", petName);
-			formData.append("nascimento", birthDate);
-			formData.append("raca", petBreed);
-
-			if (photo) formData.append("foto", photo);
+			formData.append("email", account.email);
+			formData.append("senha", account.senha);
+			formData.append("tag", profile.tag.trim().toLowerCase());
+			formData.append("nome", profile.nome.trim());
+			formData.append("nascimento", profile.nascimento);
+			formData.append("raca", profile.raca.trim());
+			formData.append("foto", profile.foto as File);
 
 			await axios.post("/api/user/register", formData);
 
 			const result = await signIn("credentials", {
-				email,
-				password,
+				email: account.email,
+				password: account.senha,
 				redirect: false,
 				callbackUrl: "/",
 			});
 
 			if (result?.error) {
-				error.throwError("Conta criada, mas não foi possível fazer login automaticamente.");
+				error.throwError("Conta criada, mas o login automatico falhou.");
 				return;
 			}
 
-			if (result?.url) window.location.href = result.url;
+			if (result?.url) {
+				window.location.href = result.url;
+			}
 		} catch (err: any) {
 			console.error(err);
-			error.throwError(err?.response?.data?.error || "Erro ao criar conta.");
+			error.throwError(
+				err?.response?.data?.error || "Erro ao criar conta."
+			);
 		} finally {
 			setLoading(false);
 		}
-	};
+	}
 
 	return (
 		<>
 			<Head>
-				<title>iPet - Cadastre-se</title>
+				<title>iPet - Cadastro</title>
 			</Head>
 
-			<div className="min-h-screen bg-[#f8f2eb] relative overflow-hidden py-6 px-3 md:px-6">
-				<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.95),_rgba(246,238,229,0.98))]" />
-
-				<div className="absolute top-10 left-8 text-[#d9b38c] opacity-60">
-					<PawPrint size={28} />
-				</div>
-				<div className="absolute top-20 right-10 text-[#9fb8bb] opacity-60 rotate-12">
-					<PawPrint size={30} />
-				</div>
-				<div className="absolute bottom-40 left-10 text-[#e8a38d] opacity-60 -rotate-12">
-					<PawPrint size={26} />
-				</div>
-				<div className="absolute bottom-28 right-12 text-[#d9c6a2] opacity-60 rotate-12">
-					<PawPrint size={24} />
-				</div>
-
-				<div className="relative z-10 max-w-[920px] mx-auto border-2 border-dashed border-[#d8c9bc] rounded-[28px] bg-[rgba(255,251,246,0.78)] px-4 py-5 md:px-8 md:py-8 shadow-[0_10px_30px_rgba(120,90,60,0.08)]">
-					<div className="border-t-2 border-dashed border-[#d2c2b3] mb-5" />
-
-					<header className="relative flex flex-col items-center">
-						<div className="w-full flex items-center justify-between max-w-[760px] mb-2">
-							<div className="hidden md:block">
-								<img src="/cute-dog.svg" alt="cachorro" className="w-28 h-auto" />
-							</div>
-
-							<div className="flex flex-col items-center">
-								<div className="text-[46px] md:text-[64px] font-black leading-none text-[#3f342d] tracking-tight">
-									<span className="text-[#6aa8b3]">i</span>Pet
-								</div>
-
-								<div className="mt-3 w-[300px] md:w-[560px] h-[62px] md:h-[76px] rounded-[18px] border-[3px] border-[#6b4633] bg-[linear-gradient(180deg,#9a6b50_0%,#7b523f_100%)] shadow-[inset_0_3px_0_rgba(255,255,255,0.18),0_6px_12px_rgba(94,62,43,0.18)] flex items-center justify-center">
-									<h1 className="text-white text-[28px] md:text-[40px] font-black drop-shadow-sm">
-										Registre-se
+			<div className="min-h-screen bg-[#f7f1eb] px-4 py-8">
+				<div className="mx-auto max-w-5xl rounded-[32px] border border-[#d8c9bc] bg-[linear-gradient(180deg,#fffdf9_0%,#f7efe6_100%)] shadow-[0_20px_60px_rgba(92,64,42,0.12)] overflow-hidden">
+					<div className="grid gap-0 md:grid-cols-[1.1fr_0.9fr]">
+						<section className="p-6 md:p-10">
+							<div className="mb-8 flex items-center justify-between">
+								<div>
+									<p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#9b7b65]">
+										iPet
+									</p>
+									<h1 className="mt-2 text-3xl font-black text-[#4b382d]">
+										Crie sua conta
 									</h1>
 								</div>
+								<div className="flex items-center gap-2 text-sm font-semibold text-[#7c6351]">
+									<span
+										className={`flex h-8 w-8 items-center justify-center rounded-full ${
+											step === 1
+												? "bg-[#d77a42] text-white"
+												: "bg-[#e8ddd2]"
+										}`}
+									>
+										1
+									</span>
+									<span
+										className={`flex h-8 w-8 items-center justify-center rounded-full ${
+											step === 2
+												? "bg-[#89a36e] text-white"
+												: "bg-[#e8ddd2]"
+										}`}
+									>
+										2
+									</span>
+								</div>
 							</div>
 
-							<div className="hidden md:block">
-								<img src="/cute-cat.svg" alt="gato" className="w-24 h-auto" />
-							</div>
-						</div>
-
-						<div className="mt-5 flex items-center justify-center gap-2 md:gap-5 w-full">
-							<div
-								className={`flex items-center gap-2 px-4 md:px-6 py-2 rounded-full text-sm md:text-[18px] font-bold shadow ${
-									step === 1 ? "bg-[#d97c43] text-white" : "bg-[#e7d7ca] text-[#8a6d5a]"
-								}`}
-							>
-								<span
-									className={`w-7 h-7 rounded-full flex items-center justify-center font-extrabold ${
-										step === 1
-											? "bg-[#fff1df] text-[#b15e2f]"
-											: "bg-[#f6ede6] text-[#8a6d5a]"
-									}`}
-								>
-									1
-								</span>
-								Pai do Pet
-							</div>
-
-							<div className="text-[#b48763] text-xl md:text-3xl font-bold">→</div>
-
-							<div
-								className={`flex items-center gap-2 px-4 md:px-6 py-2 rounded-full text-sm md:text-[18px] font-bold shadow ${
-									step === 2 ? "bg-[#9baa84] text-white" : "bg-[#e7d7ca] text-[#8a6d5a]"
-								}`}
-							>
-								<span
-									className={`w-7 h-7 rounded-full flex items-center justify-center font-extrabold ${
-										step === 2
-											? "bg-[#eef3e4] text-[#74845f]"
-											: "bg-[#f6ede6] text-[#8a6d5a]"
-									}`}
-								>
-									2
-								</span>
-								Cadastro do Pet
-							</div>
-						</div>
-					</header>
-
-					<form onSubmit={handleSubmit} className="mt-8 flex justify-center">
-						<div className="w-full max-w-[650px] bg-[#fffdfa] border border-[#ddd0c4] rounded-[30px] px-5 py-7 md:px-10 md:py-8 shadow-[0_5px_15px_rgba(0,0,0,0.08)]">
-							<h2 className="text-center text-[24px] md:text-[32px] font-extrabold text-[#4f4037]">
-								{step === 1 ? "Informações do Pai/Mãe de Pet" : "Informações do Pet"}
-							</h2>
-
-							<div className="mt-4 border-t-2 border-dashed border-[#e6d8ca]" />
-
-							{step === 1 && (
-								<div className="mt-7 space-y-5">
-									<label className="block">
-										<span className="flex items-center gap-2 text-[#5b473b] font-semibold text-[16px] md:text-[18px] mb-2">
-											<User size={18} />
-											Nome
-										</span>
-
-										<div className="flex items-center gap-3 rounded-2xl border border-[#d8c9bc] bg-white px-4 h-[58px]">
-											<User size={20} className="text-[#c8b8aa]" />
+							<form onSubmit={handleSubmit} className="space-y-5">
+								{step === 1 ? (
+									<>
+										<label className="block">
+											<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
+												Email
+											</span>
 											<input
-												type="text"
-												placeholder="Seu nome"
-												value={name}
-												onChange={(e) => setName(e.target.value)}
-												className="flex-1 bg-transparent outline-none text-[#5a463a] placeholder:text-[#b7a79a]"
-											/>
-										</div>
-									</label>
-
-									<label className="block">
-										<span className="flex items-center gap-2 text-[#5b473b] font-semibold text-[16px] md:text-[18px] mb-2">
-											<Mail size={18} />
-											E-mail
-										</span>
-
-										<div className="flex items-center gap-3 rounded-2xl border border-[#d8c9bc] bg-white px-4 h-[58px]">
-											<Mail size={20} className="text-[#c8b8aa]" />
-											<input
+												name="email"
 												type="email"
-												placeholder="E-mail"
-												value={email}
-												onChange={(e) => setEmail(e.target.value)}
-												className="flex-1 bg-transparent outline-none text-[#5a463a] placeholder:text-[#b7a79a]"
+												value={account.email}
+												onChange={handleAccountChange}
+												className="w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 outline-none focus:border-[#d77a42]"
+												placeholder="voce@email.com"
 											/>
-										</div>
-									</label>
+										</label>
 
-									<label className="block">
-										<span className="flex items-center gap-2 text-[#5b473b] font-semibold text-[16px] md:text-[18px] mb-2">
-											<Lock size={18} />
-											Senha
-										</span>
-
-										<div className="flex items-center gap-3 rounded-2xl border border-[#d8c9bc] bg-white px-4 h-[58px]">
-											<Lock size={20} className="text-[#c8b8aa]" />
+										<label className="block">
+											<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
+												Senha
+											</span>
 											<input
-												type={showPassword ? "text" : "password"}
-												placeholder="****"
-												value={password}
-												onChange={(e) => setPassword(e.target.value)}
-												className="flex-1 bg-transparent outline-none text-[#5a463a] placeholder:text-[#7a6558] font-semibold tracking-[0.2em]"
+												name="senha"
+												type="password"
+												value={account.senha}
+												onChange={handleAccountChange}
+												className="w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 outline-none focus:border-[#d77a42]"
+												placeholder="Minimo de 6 caracteres"
 											/>
+										</label>
 
+										<label className="block">
+											<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
+												Confirmar senha
+											</span>
+											<input
+												name="confirmarSenha"
+												type="password"
+												value={account.confirmarSenha}
+												onChange={handleAccountChange}
+												className="w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 outline-none focus:border-[#d77a42]"
+												placeholder="Repita sua senha"
+											/>
+										</label>
+
+										<button
+											type="button"
+											onClick={() => {
+												if (validateAccountStep()) {
+													setStep(2);
+												}
+											}}
+											className="w-full rounded-full bg-[#d77a42] px-6 py-3 text-lg font-bold text-white transition hover:bg-[#c66a32]"
+										>
+											Continuar
+										</button>
+									</>
+								) : (
+									<>
+										<label className="block">
+											<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
+												Tag do pet
+											</span>
+											<input
+												name="tag"
+												type="text"
+												value={profile.tag}
+												onChange={handleProfileChange}
+												className="w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 outline-none focus:border-[#89a36e]"
+												placeholder="thor_dog"
+											/>
+										</label>
+
+										<label className="block">
+											<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
+												Nome do pet
+											</span>
+											<input
+												name="nome"
+												type="text"
+												value={profile.nome}
+												onChange={handleProfileChange}
+												className="w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 outline-none focus:border-[#89a36e]"
+												placeholder="Thor"
+											/>
+										</label>
+
+										<div className="grid gap-4 md:grid-cols-2">
+											<label className="block">
+												<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
+													Nascimento
+												</span>
+												<input
+													name="nascimento"
+													type="date"
+													value={profile.nascimento}
+													onChange={handleProfileChange}
+													className="w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 outline-none focus:border-[#89a36e]"
+												/>
+											</label>
+
+											<label className="block">
+												<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
+													Raca
+												</span>
+												<input
+													name="raca"
+													type="text"
+													value={profile.raca}
+													onChange={handleProfileChange}
+													className="w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 outline-none focus:border-[#89a36e]"
+													placeholder="Labrador"
+												/>
+											</label>
+										</div>
+
+										<label className="block">
+											<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
+												Foto do pet
+											</span>
+											<input
+												type="file"
+												accept="image/*"
+												onChange={handleFileChange}
+												className="block w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 text-sm"
+											/>
+										</label>
+
+										<div className="flex gap-3">
 											<button
 												type="button"
-												onClick={() => setShowPassword((s) => !s)}
-												className="h-10 px-4 rounded-xl border border-[#d8c4ab] bg-[#f8e4c7] text-[#7a5a3a] font-semibold hover:bg-[#f3dbb7] transition flex items-center gap-2"
+												onClick={() => setStep(1)}
+												className="w-full rounded-full border border-[#d8c9bc] bg-white px-6 py-3 text-lg font-bold text-[#6e5748] transition hover:bg-[#f3ece4]"
 											>
-												{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-												{showPassword ? "Ocultar" : "Mostrar"}
+												Voltar
+											</button>
+											<button
+												type="submit"
+												disabled={loading}
+												className="w-full rounded-full bg-[#89a36e] px-6 py-3 text-lg font-bold text-white transition hover:bg-[#78915e] disabled:opacity-70"
+											>
+												{loading ? "Criando..." : "Criar conta"}
 											</button>
 										</div>
-									</label>
+									</>
+								)}
+							</form>
 
-									<label className="block">
-										<span className="flex items-center gap-2 text-[#5b473b] font-semibold text-[16px] md:text-[18px] mb-2">
-											<Lock size={18} />
-											Confirmar Senha
-										</span>
+							<p className="mt-6 text-sm text-[#6e5748]">
+								Ja tem uma conta?{" "}
+								<Link
+									href="/auth/login"
+									className="font-bold text-[#b96a31] underline"
+								>
+									Entrar
+								</Link>
+							</p>
+						</section>
 
-										<div className="flex items-center gap-3 rounded-2xl border border-[#d8c9bc] bg-white px-4 h-[58px]">
-											<Lock size={20} className="text-[#c8b8aa]" />
-											<input
-												type="password"
-												placeholder="****"
-												value={confirmPassword}
-												onChange={(e) => setConfirmPassword(e.target.value)}
-												className="flex-1 bg-transparent outline-none text-[#5a463a] placeholder:text-[#7a6558] font-semibold tracking-[0.2em]"
+						<aside className="relative min-h-[320px] bg-[linear-gradient(180deg,#fde7d6_0%,#f5d8c5_100%)] p-6 md:p-10">
+							<div className="absolute inset-0 bg-[url('/auth-bg-texture.svg')] opacity-30" />
+							<div className="relative flex h-full flex-col justify-between">
+								<div>
+									<p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#9b7b65]">
+										Perfil do pet
+									</p>
+									<h2 className="mt-3 text-2xl font-black text-[#4b382d]">
+										Seu companheiro tambem merece um perfil bonito.
+									</h2>
+									<p className="mt-4 text-sm leading-6 text-[#6e5748]">
+										Cadastre foto, nome, raca e a tag publica para
+										compartilhar posts e interagir com outros pets.
+									</p>
+								</div>
+
+								<div className="mt-8 flex items-end justify-center gap-4">
+									<div className="relative h-40 w-40 overflow-hidden rounded-[28px] border border-[#e8c9b7] bg-white/80 shadow-lg">
+										{previewUrl ? (
+											<Image
+												src={previewUrl}
+												alt="Preview do pet"
+												fill
+												className="object-cover"
 											/>
-										</div>
-									</label>
-
-									<div className="pt-3 flex justify-center">
-										<button
-											type="button"
-											onClick={handleNextStep}
-											className="w-full max-w-[360px] h-[62px] rounded-full bg-[#e97b2e] hover:bg-[#d86f27] text-white text-[28px] md:text-[30px] font-extrabold shadow-[inset_0_-5px_0_rgba(0,0,0,0.14),0_6px_10px_rgba(184,103,41,0.24)] transition active:scale-[0.98]"
-										>
-											Próximo
-										</button>
+										) : (
+											<Image
+												src="/cute-dog.svg"
+												alt="Ilustracao de cachorro"
+												fill
+												className="object-contain p-4"
+											/>
+										)}
+									</div>
+									<div className="relative h-28 w-28">
+										<Image
+											src="/cute-cat.svg"
+											alt="Ilustracao de gato"
+											fill
+											className="object-contain"
+										/>
 									</div>
 								</div>
-							)}
-
-							{step === 2 && (
-								<div className="mt-7 space-y-5">
-									<label className="block">
-										<span className="flex items-center gap-2 text-[#5b473b] font-semibold text-[16px] md:text-[18px] mb-2">
-											<PawPrint size={18} />
-											Nome do Pet
-										</span>
-
-										<div className="flex items-center gap-3 rounded-2xl border border-[#d8c9bc] bg-white px-4 h-[58px]">
-											<PawPrint size={20} className="text-[#c8b8aa]" />
-											<input
-												type="text"
-												placeholder="Nome do pet"
-												value={petName}
-												onChange={(e) => setPetName(e.target.value)}
-												className="flex-1 bg-transparent outline-none text-[#5a463a] placeholder:text-[#b7a79a]"
-											/>
-										</div>
-									</label>
-
-									<label className="block">
-										<span className="flex items-center gap-2 text-[#5b473b] font-semibold text-[16px] md:text-[18px] mb-2">
-											<PawPrint size={18} />
-											Raça
-										</span>
-
-										<div className="flex items-center gap-3 rounded-2xl border border-[#d8c9bc] bg-white px-4 h-[58px]">
-											<PawPrint size={20} className="text-[#c8b8aa]" />
-											<input
-												type="text"
-												placeholder="Raça"
-												value={petBreed}
-												onChange={(e) => setPetBreed(e.target.value)}
-												className="flex-1 bg-transparent outline-none text-[#5a463a] placeholder:text-[#b7a79a]"
-											/>
-										</div>
-									</label>
-
-									<label className="block">
-										<span className="flex items-center gap-2 text-[#5b473b] font-semibold text-[16px] md:text-[18px] mb-2">
-											<Calendar size={18} />
-											Data de Nascimento
-										</span>
-
-										<div className="flex items-center gap-3 rounded-2xl border border-[#d8c9bc] bg-white px-4 h-[58px]">
-											<Calendar size={20} className="text-[#c8b8aa]" />
-											<input
-												type="date"
-												value={birthDate}
-												onChange={(e) => setBirthDate(e.target.value)}
-												className="flex-1 bg-transparent outline-none text-[#5a463a]"
-											/>
-										</div>
-									</label>
-
-									<div className="block">
-										<span className="flex items-center gap-2 text-[#5b473b] font-semibold text-[16px] md:text-[18px] mb-3">
-											<Camera size={18} />
-											Foto do Pet
-										</span>
-
-										<div className="rounded-[24px] border border-[#d8c9bc] bg-white p-4 flex flex-col md:flex-row items-center gap-4">
-											<div className="w-24 h-24 rounded-full bg-[#fff6ef] border border-[#e6d6c8] flex items-center justify-center overflow-hidden shadow-sm">
-												{previewUrl ? (
-													<img
-														src={previewUrl}
-														alt="preview"
-														className="w-full h-full object-cover"
-													/>
-												) : (
-													<img
-														src="/cute-dog.svg"
-														alt="placeholder pet"
-														className="w-14 h-14"
-													/>
-												)}
-											</div>
-
-											<div className="flex-1 text-center md:text-left">
-												<input
-													id="photo"
-													type="file"
-													accept="image/*"
-													onChange={handleFile}
-													className="hidden"
-												/>
-												<label
-													htmlFor="photo"
-													className="inline-block bg-[#f8e4c7] border border-[#d8c4ab] text-[#7a5a3a] font-semibold px-5 py-3 rounded-xl cursor-pointer hover:bg-[#f3dbb7] transition"
-												>
-													Selecionar foto do pet
-												</label>
-												<p className="text-xs text-[#8C6F5A] mt-2">Opcional</p>
-											</div>
-										</div>
-									</div>
-
-									<div className="pt-3 flex flex-col md:flex-row justify-center gap-3">
-										<button
-											type="button"
-											onClick={handlePrevStep}
-											className="w-full md:w-[190px] h-[58px] rounded-[18px] border border-[#d9c9ba] bg-[#f8f1e8] text-[#6b594c] text-[24px] font-semibold shadow-sm hover:bg-[#f3e8db] transition"
-										>
-											Voltar
-										</button>
-
-										<button
-											type="submit"
-											disabled={loading}
-											className="w-full md:flex-1 max-w-[360px] h-[62px] rounded-full bg-[#e97b2e] hover:bg-[#d86f27] text-white text-[24px] md:text-[28px] font-extrabold shadow-[inset_0_-5px_0_rgba(0,0,0,0.14),0_6px_10px_rgba(184,103,41,0.24)] transition active:scale-[0.98] disabled:opacity-60"
-										>
-											{loading ? "Criando..." : "Criar conta"}
-										</button>
-									</div>
-								</div>
-							)}
-						</div>
-					</form>
-
-					<section className="mt-10 text-center">
-						<p className="text-[#58463b] text-[24px] md:text-[34px] font-bold">
-							Agora, cadastre seu Pet
-						</p>
-
-						<div className="mt-4 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-20">
-							<div className="flex flex-col items-center">
-								<img
-									src="/sleeping-cat.svg"
-									alt="gato dormindo"
-									className="w-44 md:w-52"
-								/>
 							</div>
-
-							<div className="flex flex-col items-center">
-								<img src="/cute-dog.svg" alt="cachorro" className="w-40 md:w-48" />
-							</div>
-						</div>
-
-						<div className="mt-8 text-[#5a463b] text-[20px] md:text-[30px]">
-							Já tem uma conta?{" "}
-							<a href="/auth/login" className="text-[#b96a31] font-extrabold underline">
-								Entrar
-							</a>
-						</div>
-					</section>
-
-					<div className="mt-8 border-t-2 border-dashed border-[#cdb9a8]" />
+						</aside>
+					</div>
 				</div>
 			</div>
 		</>

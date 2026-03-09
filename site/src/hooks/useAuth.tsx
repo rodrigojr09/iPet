@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { AuthProps } from "../../types/AuthProvider";
 import axios from "axios";
@@ -7,7 +7,7 @@ import { BoneIcon } from "lucide-react";
 
 const AuthContext = createContext<AuthProps | undefined>(undefined);
 
-export default function AuthProvider({ children }: any) {
+export default function AuthProvider({ children }: { children: ReactNode }) {
 	const { data, status } = useSession();
 	const router = useRouter();
 	const [account, setAccount] = useState<AuthProps["account"] | undefined>();
@@ -15,16 +15,20 @@ export default function AuthProvider({ children }: any) {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
+		let cancelled = false;
+
 		if (status === "authenticated") {
-			(async () => {
+			void (async () => {
 				try {
 					const res = await axios.get(
 						`/api/user/${data.user.id}?profiles=true`
 					);
+					if (cancelled) return;
 					setAccount(res.data);
 					setProfile(res.data.profiles?.[0]);
 					setLoading(false);
 				} catch (err: any) {
+					if (cancelled) return;
 					if (err.response?.status === 404) {
 						await signOut().then(() => {
 							setLoading(false);
@@ -35,8 +39,14 @@ export default function AuthProvider({ children }: any) {
 				}
 			})();
 		} else if (status === "unauthenticated") {
+			setAccount(undefined);
+			setProfile(undefined);
 			setLoading(false);
 		}
+
+		return () => {
+			cancelled = true;
+		};
 	}, [data?.user.id, status]);
 
 	useEffect(() => {
@@ -58,7 +68,7 @@ export default function AuthProvider({ children }: any) {
 	}
 
 	function logout() {
-		signOut();
+		void signOut();
 	}
 
 	if (!loading)

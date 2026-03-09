@@ -1,4 +1,5 @@
 import prisma from "@/utils/prisma";
+import { handleApiError } from "@/utils/apiError";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -123,8 +124,7 @@ export default async function handle(
 				.status(201)
 				.json({ user: userWithoutSenha, profile: profileCreated });
 		} catch (error) {
-			console.error("Error creating account/profile:", error);
-			return res.status(500).json({ error: "Internal server error" });
+			return handleApiError(res, error, "Internal server error");
 		}
 	});
 }

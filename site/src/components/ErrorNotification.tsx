@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, PanelTopClose, XCircle } from "lucide-react";
+import { ChevronRight, XCircle } from "lucide-react";
 import React from "react";
 
 type Props = {
@@ -33,7 +33,7 @@ export const ErrorNotification: React.FC<Props> = ({ message, onClose }) => {
 							onClick={onClose}
 							className="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-2 py-1.5 rounded-full transition"
 						>
-							<ChevronRight/>
+							<ChevronRight />
 						</button>
 					</div>
 				</motion.div>

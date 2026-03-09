@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/utils/prisma";
+import { handleApiError } from "@/utils/apiError";
 import { v4 as uuidv4 } from "uuid";
 import { IncomingForm, File } from "formidable";
 import fs from "fs";
@@ -91,10 +92,7 @@ export default async function handler(
 
 			return res.status(201).json({ post: createdPost });
 		} catch (error) {
-			console.error("Erro ao criar post:", error);
-			return res
-				.status(500)
-				.json({ error: "Erro interno ao criar o post" });
+			return handleApiError(res, error, "Erro interno ao criar o post");
 		}
 	});
 }

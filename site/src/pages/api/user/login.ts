@@ -1,4 +1,5 @@
 import prisma from "@/utils/prisma";
+import { handleApiError } from "@/utils/apiError";
 import bcrypt from "bcryptjs";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -35,7 +36,6 @@ export default async function handle(
 		const { senha, ...userWithoutPassword } = user;
 		return res.status(200).json(userWithoutPassword);
 	} catch (error) {
-		console.error("Login error:", error);
-		return res.status(500).json({ error: "Internal server error" });
+		return handleApiError(res, error, "Internal server error");
 	}
 }
