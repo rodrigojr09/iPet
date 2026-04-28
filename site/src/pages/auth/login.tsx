@@ -49,108 +49,116 @@ export default function LoginPage() {
 				<title>iPet - Login</title>
 			</Head>
 
-			<div className="min-h-screen bg-[#f7f1eb] px-4 py-8">
-				<div className="mx-auto max-w-4xl overflow-hidden rounded-[32px] border border-[#d8c9bc] bg-[linear-gradient(180deg,#fffdf9_0%,#f7efe6_100%)] shadow-[0_20px_60px_rgba(92,64,42,0.12)] md:grid md:grid-cols-[0.95fr_1.05fr]">
-					<aside className="relative min-h-[280px] bg-[linear-gradient(180deg,#f5d8c5_0%,#fde7d6_100%)] p-8 md:p-10">
-						<div className="absolute inset-0 bg-[url('/auth-bg-texture.svg')] opacity-30" />
-						<div className="relative flex h-full flex-col justify-between">
-							<div>
-								<p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#9b7b65]">
-									Bem-vindo de volta
-								</p>
-								<h1 className="mt-3 text-3xl font-black text-[#4b382d]">
-									Entre para acompanhar o feed do seu pet.
-								</h1>
-								<p className="mt-4 text-sm leading-6 text-[#6e5748]">
-									Acesse sua conta, publique fotos e acompanhe outros
-									perfis da comunidade iPet.
+			<div className="min-h-screen bg-[#f7f1eb] px-4 py-12 flex items-center justify-center">
+				<div className="w-full max-w-5xl overflow-hidden rounded-[24px] border border-[#e0d1c3] bg-white shadow-[0_10px_40px_rgba(92,64,42,0.08)] md:grid md:grid-cols-2">
+					{/* Left Side */}
+					<aside className="relative hidden min-h-full bg-[linear-gradient(135deg,#f5d8c5_0%,#fde7d6_100%)] p-12 md:flex md:flex-col md:justify-between">
+						<div className="absolute inset-0 opacity-40" style={{backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(215,122,66,0.1) 0%, transparent 50%)'}} />
+						<div className="relative z-10">
+							<div className="mb-2 inline-block">
+								<p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#9b7b65]">
+									Bem-vindo
 								</p>
 							</div>
+							<h1 className="mt-4 text-4xl font-black leading-tight text-[#4b382d]">
+								Conecte-se com seu pet
+						</h1>
+						<p className="mt-6 text-sm leading-relaxed text-[#6e5748] max-w-sm">
+								Acesse sua conta, compartilhe momentos especiais com seu pet e conecte-se com a comunidade iPet.
+							</p>
+						</div>
 
-							<div className="mt-8 flex items-end justify-center gap-4">
-								<div className="relative h-40 w-40 overflow-hidden rounded-[28px] border border-[#e8c9b7] bg-white/80 shadow-lg">
-									<Image
-										src="/cute-dog.svg"
-										alt="Ilustracao de cachorro"
-										fill
-										className="object-contain p-4"
-									/>
-								</div>
-								<div className="relative h-28 w-28">
-									<Image
-										src="/cute-cat.svg"
-										alt="Ilustracao de gato"
-										fill
-										className="object-contain"
-									/>
-								</div>
-							</div>
+						<div className="relative z-10 w-full h-48 overflow-hidden rounded-[16px] shadow-[0_8px_24px_rgba(92,64,42,0.15)] mt-8">
+							<Image
+								src="/pets-banner.jpg"
+								alt="Pets"
+								fill
+								className="object-cover"
+							/>
 						</div>
 					</aside>
 
-					<section className="p-6 md:p-10">
-						<p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#9b7b65]">
-							iPet
-						</p>
-						<h2 className="mt-2 text-3xl font-black text-[#4b382d]">
-							Entrar
-						</h2>
+					{/* Right Side */}
+					<section className="flex flex-col justify-center p-8 md:p-12">
+						<div className="mb-8">
+							<p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#9b7b65] mb-3">
+								iPet
+							</p>
+							<h2 className="text-3xl font-black text-[#4b382d]">
+								Entrar
+							</h2>
+						</div>
 
-						<form onSubmit={handleSubmit} className="mt-8 space-y-5">
-							<label className="block">
-								<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
-									Email
-								</span>
-								<input
-									type="email"
-									value={email}
-									onChange={(event) => setEmail(event.target.value)}
-									className="w-full rounded-2xl border border-[#d8c9bc] bg-white px-4 py-3 outline-none focus:border-[#d77a42]"
-									placeholder="voce@email.com"
-								/>
-							</label>
-
-							<label className="block">
-								<span className="mb-2 block text-sm font-semibold text-[#5f4a3f]">
-									Senha
-								</span>
-								<div className="flex items-center gap-2 rounded-2xl border border-[#d8c9bc] bg-white px-4 py-2">
+						<form onSubmit={handleSubmit} className="space-y-6">
+							<div>
+								<label className="block">
+									<span className="mb-2.5 block text-sm font-semibold text-[#5f4a3f]">
+										Email
+									</span>
 									<input
-										type={showPassword ? "text" : "password"}
-										value={password}
-										onChange={(event) => setPassword(event.target.value)}
-										className="w-full bg-transparent py-1 outline-none"
-										placeholder="Sua senha"
+										type="email"
+										value={email}
+										onChange={(event) => setEmail(event.target.value)}
+										className="w-full rounded-lg border border-[#e0d1c3] bg-[#fafaf8] px-4 py-3 text-[#4b382d] placeholder-[#9b7b65] outline-none transition-all duration-200 focus:bg-white focus:border-[#d77a42] focus:ring-2 focus:ring-[#d77a42]/10"
+										placeholder="seu@email.com"
+										required
 									/>
-									<button
-										type="button"
-										onClick={() => setShowPassword((prev) => !prev)}
-										className="rounded-full p-2 text-[#7c6351] transition hover:bg-[#f3ece4]"
-										aria-label="Mostrar ou ocultar senha"
-									>
-										{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-									</button>
-								</div>
-							</label>
+								</label>
+							</div>
+
+							<div>
+								<label className="block">
+									<span className="mb-2.5 block text-sm font-semibold text-[#5f4a3f]">
+										Senha
+									</span>
+									<div className="flex items-center gap-0 rounded-lg border border-[#e0d1c3] bg-[#fafaf8] px-4 py-3 transition-all duration-200 focus-within:bg-white focus-within:border-[#d77a42] focus-within:ring-2 focus-within:ring-[#d77a42]/10">
+										<input
+											type={showPassword ? "text" : "password"}
+											value={password}
+											onChange={(event) => setPassword(event.target.value)}
+											className="w-full bg-transparent text-[#4b382d] placeholder-[#9b7b65] outline-none"
+											placeholder="Digite sua senha"
+											required
+										/>
+										<button
+											type="button"
+											onClick={() => setShowPassword((prev) => !prev)}
+											className="ml-2 rounded-md p-1.5 text-[#7c6351] transition-colors hover:bg-[#f3ece4] hover:text-[#d77a42]"
+											aria-label="Mostrar ou ocultar senha"
+										>
+											{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+										</button>
+									</div>
+								</label>
+							</div>
 
 							<button
 								type="submit"
 								disabled={loading}
-								className="w-full rounded-full bg-[#d77a42] px-6 py-3 text-lg font-bold text-white transition hover:bg-[#c66a32] disabled:opacity-70"
+								className="w-full rounded-lg bg-[#d77a42] px-6 py-3.5 text-base font-semibold text-white transition-all duration-200 hover:bg-[#c66a32] hover:shadow-[0_8px_20px_rgba(215,122,66,0.3)] disabled:opacity-60 disabled:cursor-not-allowed mt-2"
 							>
-								{loading ? "Entrando..." : "Entrar"}
+								{loading ? (
+									<span className="flex items-center justify-center gap-2">
+										<span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></span>
+										Entrando...
+									</span>
+								) : (
+									"Entrar"
+								)}
 							</button>
 						</form>
 
-						<p className="mt-6 text-sm text-[#6e5748]">
-							Ainda nao tem conta?{" "}
-							<Link
-								href="/auth/register"
-								className="font-bold text-[#b96a31] underline"
-							>
-								Cadastrar-se
-							</Link>
-						</p>
+						<div className="mt-8 border-t border-[#e0d1c3] pt-8">
+							<p className="text-sm text-[#6e5748]">
+								Ainda não tem conta?{" "}
+								<Link
+									href="/auth/register"
+									className="font-semibold text-[#d77a42] transition-colors hover:text-[#c66a32]"
+								>
+									Criar conta
+								</Link>
+							</p>
+						</div>
 					</section>
 				</div>
 			</div>
